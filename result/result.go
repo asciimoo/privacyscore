@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"sync"
 )
 
 const maxResponseBodySize = 1024 * 1024 * 5
@@ -23,6 +24,7 @@ type Result struct {
 }
 
 var baseScore penalty.Score = 100
+var mutex = &sync.Mutex{}
 
 func New(URL string, r *http.Response) (*Result, error) {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
@@ -41,13 +43,17 @@ func New(URL string, r *http.Response) (*Result, error) {
 }
 
 func (r *Result) AddError(e error) {
+	mutex.Lock()
 	r.Errors = append(r.Errors, e)
+	mutex.Unlock()
 }
 
 func (r *Result) AddPenalty(desc string, s penalty.Score) {
 	p := penalty.New(desc, s)
+	mutex.Lock()
 	r.Score -= p.Value
 	r.Penalties = append(r.Penalties, p)
+	mutex.Unlock()
 }
 
 func (r *Result) IsNewForeignHost(u *url.URL) bool {
@@ -59,7 +65,9 @@ func (r *Result) IsNewForeignHost(u *url.URL) bool {
 			return false
 		}
 	}
+	mutex.Lock()
 	r.ForeignHosts = append(r.ForeignHosts, u.Host)
+	mutex.Unlock()
 	return true
 }
 
