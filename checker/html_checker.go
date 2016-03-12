@@ -58,6 +58,15 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			if r.IsNewForeignHost(u) {
 				r.AddPenalty("Loads external resource from "+u.Host, 10)
 			}
+		case "img":
+			src, found := getAttr(t, "src")
+			if !found {
+				break
+			}
+			u, _ := url.Parse(src)
+			if r.IsNewForeignHost(u) {
+				r.AddPenalty("Loads external resource from "+u.Host, 10)
+			}
 		}
 	}
 }
