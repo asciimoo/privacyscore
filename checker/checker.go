@@ -12,6 +12,7 @@ type Checker interface {
 
 var checkers []Checker = []Checker{
 	&HTMLChecker{},
+	&HTTPSChecker{},
 }
 
 func Run(URL string) (*result.Result, bool) {
