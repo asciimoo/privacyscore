@@ -9,6 +9,8 @@ body { background-color: #fcfbfa; margin: 0; padding: 0; }
 .navigation h1 { font-size: 1.2em; padding: 0.4em 0; margin: 0; }
 .main { margin-top: 1em; }
 #main_form { margin-top: 5em; }
+#url_input { color: #606c76; }
+input.big_input { height: 1.6em; padding: 0 0.4em; font-size: 2.2em; line-height: 1.6em; vertical-align: middle; }
 
 .result_url { line-height: 4em; text-align: center; }
 .score { color: #fcfbfa; border-radius: 50%; height: 4em; width: 4em; line-height: 4em; text-align: center; float: right; }
