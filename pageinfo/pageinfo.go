@@ -17,14 +17,13 @@ type PageInfo struct {
 	ForeignHosts []string
 }
 
-func New(URL string, r *http.Response) (*PageInfo, error) {
+func New(r *http.Response) (*PageInfo, error) {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
-	u, _ := url.Parse(URL)
 	return &PageInfo{
 		body,
 		r.Header.Get("Content-Type"),
 		r.StatusCode,
-		u,
+		r.Request.URL,
 		make([]string, 0),
 	}, err
 }

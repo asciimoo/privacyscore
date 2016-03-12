@@ -22,7 +22,7 @@ func Run(URL string) (checkResult *result.Result) {
 		checkResult.AddError(err)
 		return
 	}
-	info, err := pageinfo.New(URL, response)
+	info, err := pageinfo.New(response)
 	if err != nil {
 		checkResult.AddError(err)
 	}
