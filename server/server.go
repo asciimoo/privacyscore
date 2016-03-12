@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/asciimoo/privacyscore/checker"
-	"github.com/asciimoo/privacyscore/result"
 )
 
 var (
@@ -56,11 +55,12 @@ func serveAboutPage(w http.ResponseWriter, request *http.Request) {
 
 func checkURL(w http.ResponseWriter, request *http.Request) {
 	url := request.FormValue("url")
-	results := checker.Run(url)
-	renderTemplate(w, "result.tpl", struct {
-		Result *result.Result
-		URL    string
-	}{results, url})
+	results, ok := checker.Run(url)
+	if ok {
+		renderTemplate(w, "result.tpl", results)
+	} else {
+		serveIndexPage(w, request)
+	}
 }
 
 func serveMilligramCSS(w http.ResponseWriter, request *http.Request) {

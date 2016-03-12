@@ -3,31 +3,29 @@ package checker
 import (
 	"net/http"
 
-	"github.com/asciimoo/privacyscore/pageinfo"
 	"github.com/asciimoo/privacyscore/result"
 )
 
 type Checker interface {
-	Check(*pageinfo.PageInfo, *result.Result)
+	Check(*result.Result)
 }
 
 var checkers []Checker = []Checker{
 	&HTMLChecker{},
 }
 
-func Run(URL string) (checkResult *result.Result) {
-	checkResult = result.New()
+func Run(URL string) (*result.Result, bool) {
+	var r *result.Result
 	response, err := http.Get(URL)
 	if err != nil {
-		checkResult.AddError(err)
-		return
+		return r, false
 	}
-	info, err := pageinfo.New(response)
+	r, err = result.New(URL, response)
 	if err != nil {
-		checkResult.AddError(err)
+		r.AddError(err)
 	}
 	for _, c := range checkers {
-		c.Check(info, checkResult)
+		c.Check(r)
 	}
-	return
+	return r, true
 }

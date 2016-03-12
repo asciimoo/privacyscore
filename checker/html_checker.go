@@ -9,19 +9,18 @@ import (
 
 	"golang.org/x/net/html"
 
-	"github.com/asciimoo/privacyscore/pageinfo"
 	"github.com/asciimoo/privacyscore/result"
 )
 
 type HTMLChecker struct{}
 
-func (c *HTMLChecker) Check(info *pageinfo.PageInfo, r *result.Result) {
-	if !strings.Contains(strings.ToLower(info.ContentType), "html") {
+func (c *HTMLChecker) Check(r *result.Result) {
+	if !strings.Contains(strings.ToLower(r.ContentType), "html") {
 		r.AddError(errors.New("No HTML content found"))
 		return
 	}
 	scriptTagFound := false
-	t := html.NewTokenizer(bytes.NewReader(info.ResponseBody))
+	t := html.NewTokenizer(bytes.NewReader(r.ResponseBody))
 	for {
 		tagToken := t.Next()
 		if tagToken == html.ErrorToken {
@@ -47,7 +46,7 @@ func (c *HTMLChecker) Check(info *pageinfo.PageInfo, r *result.Result) {
 				break
 			}
 			u, _ := url.Parse(src)
-			if info.IsNewForeignHost(u) {
+			if r.IsNewForeignHost(u) {
 				r.AddPenalty("Loads external resource from "+u.Host, 10)
 			}
 		case "link":
@@ -56,7 +55,7 @@ func (c *HTMLChecker) Check(info *pageinfo.PageInfo, r *result.Result) {
 				break
 			}
 			u, _ := url.Parse(attrs["href"])
-			if info.IsNewForeignHost(u) {
+			if r.IsNewForeignHost(u) {
 				r.AddPenalty("Loads external resource from "+u.Host, 10)
 			}
 		}
