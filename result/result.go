@@ -62,3 +62,15 @@ func (r *Result) IsNewForeignHost(u *url.URL) bool {
 	r.ForeignHosts = append(r.ForeignHosts, u.Host)
 	return true
 }
+
+func (r *Result) GetScoreName() string {
+	switch {
+	case r.Score > 80:
+		return "good"
+	case r.Score > 60:
+		return "medium"
+	case r.Score > 0:
+		return "bad"
+	}
+	return "poor"
+}
