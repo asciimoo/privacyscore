@@ -16,6 +16,7 @@ body { background-color: #fcfbfa; margin: 0; padding: 0; }
 .medium { background-color: #f1c40f; }
 .bad { background-color: #e74c3c; }
 .poor { background-color: #2c3e50; }
+input[type="submit"] { float: right; }
     </style>
 </head>
 <body>
@@ -23,7 +24,7 @@ body { background-color: #fcfbfa; margin: 0; padding: 0; }
         <nav class="navigation">
             <section class="container">
                 <a class="navigation-title" href="./">
-                    <h1 class="title">Privacy Score</h1>
+                    <h1 class="title">PrivacyScore</h1>
                 </a>
             </section>
         </nav>
