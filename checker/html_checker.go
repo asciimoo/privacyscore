@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"net/url"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -31,7 +32,7 @@ func (c *HTMLChecker) Check(info *pageinfo.PageInfo, r *result.Result) {
 				return
 			}
 		}
-		if tagToken != html.StartTagToken {
+		if tagToken != html.StartTagToken && tagToken != html.SelfClosingTagToken {
 			continue
 		}
 		tagName, _ := t.TagName()
@@ -42,8 +43,21 @@ func (c *HTMLChecker) Check(info *pageinfo.PageInfo, r *result.Result) {
 				scriptTagFound = true
 			}
 			src, found := getAttr(t, "src")
-			if found && !info.IsSameOrigin(src) {
-				r.AddPenalty("Loads external javascript resource: "+string(src), 10)
+			if !found {
+				break
+			}
+			u, _ := url.Parse(src)
+			if info.IsNewForeignHost(u) {
+				r.AddPenalty("Loads external resource from "+u.Host, 10)
+			}
+		case "link":
+			attrs := getAttrs(t)
+			if _, found := attrs["href"]; !found {
+				break
+			}
+			u, _ := url.Parse(attrs["href"])
+			if info.IsNewForeignHost(u) {
+				r.AddPenalty("Loads external resource from "+u.Host, 10)
 			}
 		}
 	}
@@ -60,4 +74,16 @@ func getAttr(t *html.Tokenizer, name string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func getAttrs(t *html.Tokenizer) map[string]string {
+	attrs := make(map[string]string)
+	for {
+		attrName, attrValue, more := t.TagAttr()
+		attrs[string(attrName)] = string(attrValue)
+		if !more {
+			break
+		}
+	}
+	return attrs
 }

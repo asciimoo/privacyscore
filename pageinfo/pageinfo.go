@@ -14,6 +14,7 @@ type PageInfo struct {
 	ContentType  string
 	StatusCode   int
 	URL          *url.URL
+	ForeignHosts []string
 }
 
 func New(URL string, r *http.Response) (*PageInfo, error) {
@@ -24,16 +25,19 @@ func New(URL string, r *http.Response) (*PageInfo, error) {
 		r.Header.Get("Content-Type"),
 		r.StatusCode,
 		u,
+		make([]string, 0),
 	}, err
 }
 
-func (p *PageInfo) IsSameOrigin(URL string) bool {
-	u, err := url.Parse(URL)
-	if err != nil {
+func (p *PageInfo) IsNewForeignHost(u *url.URL) bool {
+	if u.Host == "" || u.Host == p.URL.Host {
 		return false
 	}
-	if u.Host == "" || u.Host == p.URL.Host {
-		return true
+	for _, hostName := range p.ForeignHosts {
+		if hostName == u.Host {
+			return false
+		}
 	}
-	return false
+	p.ForeignHosts = append(p.ForeignHosts, u.Host)
+	return true
 }
