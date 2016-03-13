@@ -1,6 +1,8 @@
 {{ define "content" }}
-<h3 class="score {{ .GetScoreName }}">{{ .Score }}/100</h3>
-<h3 class="result_url">{{ .URL }}</h3>
+<div class="result_header">
+    <h3 class="score {{ .GetScoreName }}">{{ .Score }}/100</h3>
+    <h3 class="result_url">{{ .URL }}</h3>
+</div>
 <div class="row">
     {{ if .Penalties }}
     <div class="column">
