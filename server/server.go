@@ -55,12 +55,8 @@ func serveAboutPage(w http.ResponseWriter, request *http.Request) {
 
 func checkURL(w http.ResponseWriter, request *http.Request) {
 	url := request.FormValue("url")
-	results, ok := checker.Run(url)
-	if ok {
-		renderTemplate(w, "result.tpl", results)
-	} else {
-		serveIndexPage(w, request)
-	}
+	results, _ := checker.Run(url)
+	renderTemplate(w, "result.tpl", results)
 }
 
 func serveMilligramCSS(w http.ResponseWriter, request *http.Request) {

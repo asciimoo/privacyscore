@@ -20,6 +20,8 @@ func Run(URL string) (*result.Result, bool) {
 	var r *result.Result
 	response, err := http.Get(URL)
 	if err != nil {
+		r = &result.Result{}
+		r.AddError(err)
 		return r, false
 	}
 	r, err = result.New(URL, response)
