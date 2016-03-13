@@ -14,8 +14,9 @@ body { background-color: #fcfbfa; margin: 0; padding: 0; }
 #main_form { margin-top: 5em; }
 #url_input { color: #606c76; background: #f4f5f6; }
 input.big_input { height: 1.6em; padding: 0 0.4em; font-size: 2.2em; line-height: 1.6em; vertical-align: middle; font-weight: 300; }
+.invisible { display: none; }
 
-.result_header { display: flex; align-items: center; flex-direction: row-reverse; }
+.result_header { display: flex; align-items: center; }
 .result_url { text-align: center; flex-grow: 1; word-wrap: break-word; }
 .score { color: #fcfbfa; border-radius: 50%; height: 4em; width: 4em; line-height: 4em; text-align: center; flex-shrink: 0; }
 .good { background-color: #40d47e; }
