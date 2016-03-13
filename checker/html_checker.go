@@ -45,30 +45,19 @@ func (c *HTMLChecker) Check(r *result.Result) {
 				scriptTagFound = true
 			}
 			src, found := getAttr(t, "src")
-			if !found {
-				break
-			}
-			u, _ := url.Parse(src)
-			if r.IsNewForeignHost(u) {
-				r.AddPenalty("Loads external resource from "+u.Host, 10)
+			if found {
+				addExternalPenalty(r, src)
 			}
 		case "link":
 			attrs := getAttrs(t)
-			if _, found := attrs["href"]; !found {
+			if _, found := attrs["href"]; found {
+				addExternalPenalty(r, attrs["href"])
 				break
-			}
-			u, _ := url.Parse(attrs["href"])
-			if r.IsNewForeignHost(u) {
-				r.AddPenalty("Loads external resource from "+u.Host, 10)
 			}
 		case "img":
 			src, found := getAttr(t, "src")
-			if !found {
-				break
-			}
-			u, _ := url.Parse(src)
-			if r.IsNewForeignHost(u) {
-				r.AddPenalty("Loads external resource from "+u.Host, 10)
+			if found {
+				addExternalPenalty(r, src)
 			}
 		case "meta":
 			attrs := getAttrs(t)
@@ -104,6 +93,13 @@ func (c *HTMLChecker) Check(r *result.Result) {
 	}
 	if hasHTTPLink {
 		r.AddPenalty("Has link to unencrypted host", 2)
+	}
+}
+
+func addExternalPenalty(r *result.Result, src string) {
+	u, _ := url.Parse(src)
+	if r.IsNewForeignHost(u) {
+		r.AddPenalty("Loads external resource from "+result.CropSubdomains(u.Host), 10)
 	}
 }
 

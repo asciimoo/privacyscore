@@ -1,12 +1,15 @@
 package result
 
 import (
-	"github.com/asciimoo/privacyscore/penalty"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"sync"
+
+	"github.com/asciimoo/privacyscore/penalty"
+
+	"golang.org/x/net/publicsuffix"
 )
 
 const maxResponseBodySize = 1024 * 1024 * 5
@@ -22,6 +25,7 @@ type Result struct {
 	ForeignHosts []string
 	OriginalURL  *url.URL
 	Cookies      []*http.Cookie
+	Domain       string
 }
 
 var baseScore penalty.Score = 100
@@ -41,6 +45,7 @@ func New(URL string, r *http.Response) (*Result, error) {
 		make([]string, 0),
 		u,
 		r.Cookies(),
+		CropSubdomains(u.Host),
 	}, err
 }
 
@@ -59,18 +64,30 @@ func (r *Result) AddPenalty(desc string, s penalty.Score) {
 }
 
 func (r *Result) IsNewForeignHost(u *url.URL) bool {
-	if u.Host == "" || u.Host == r.URL.Host {
+	if u.Host == "" {
+		return false
+	}
+	host := CropSubdomains(u.Host)
+	if host == r.Domain {
 		return false
 	}
 	for _, hostName := range r.ForeignHosts {
-		if hostName == u.Host {
+		if hostName == host {
 			return false
 		}
 	}
 	mutex.Lock()
-	r.ForeignHosts = append(r.ForeignHosts, u.Host)
+	r.ForeignHosts = append(r.ForeignHosts, host)
 	mutex.Unlock()
 	return true
+}
+
+func CropSubdomains(domain string) string {
+	host, err := publicsuffix.EffectiveTLDPlusOne(domain)
+	if err != nil {
+		return domain
+	}
+	return host
 }
 
 func (r *Result) GetScoreName() string {
