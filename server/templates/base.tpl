@@ -1,4 +1,5 @@
 {{ define "base" }}
+<!DOCTYPE html>
 <html>
 <head>
     <title>Privacy Score</title>
