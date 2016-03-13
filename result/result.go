@@ -92,11 +92,11 @@ func CropSubdomains(domain string) string {
 
 func (r *Result) GetScoreName() string {
 	switch {
-	case r.Score > 80:
+	case r.Score >= 80:
 		return "good"
-	case r.Score > 60:
+	case r.Score >= 50:
 		return "medium"
-	case r.Score > 0:
+	case r.Score >= 0:
 		return "bad"
 	}
 	return "poor"
