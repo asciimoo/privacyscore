@@ -20,6 +20,9 @@ func (c *HTMLChecker) Check(r *result.Result) {
 		return
 	}
 	scriptTagFound := false
+	forbidsReferrer := false
+	hasExternalLink := false
+	hasHTTPLink := false
 	t := html.NewTokenizer(bytes.NewReader(r.ResponseBody))
 	for {
 		tagToken := t.Next()
@@ -67,7 +70,40 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			if r.IsNewForeignHost(u) {
 				r.AddPenalty("Loads external resource from "+u.Host, 10)
 			}
+		case "meta":
+			attrs := getAttrs(t)
+			if _, found := attrs["name"]; !found || attrs["name"] != "referrer" {
+				break
+			}
+			if _, found := attrs["content"]; !found {
+				break
+			}
+			switch strings.ToLower(attrs["content"]) {
+			case "never", "none", "origin":
+				forbidsReferrer = true
+			}
+		case "a":
+			src, found := getAttr(t, "href")
+			if !found {
+				break
+			}
+			u, _ := url.Parse(src)
+			if (u.Scheme == "" && r.URL.Scheme != "https") || u.Scheme == "http" {
+				hasHTTPLink = true
+			}
+			if forbidsReferrer || hasExternalLink {
+				break
+			}
+			if r.IsNewForeignHost(u) {
+				hasExternalLink = true
+			}
 		}
+	}
+	if hasExternalLink && !forbidsReferrer {
+		r.AddPenalty("Has link to foreign host without HTTP referrer restrictions", 10)
+	}
+	if hasHTTPLink {
+		r.AddPenalty("Has link to unencrypted host", 2)
 	}
 }
 
