@@ -68,7 +68,7 @@ func (c *HTMLChecker) Check(r *result.Result) {
 				break
 			}
 			switch strings.ToLower(attrs["content"]) {
-			case "never", "none", "origin":
+			case "never", "none", "origin", "no-referrer":
 				forbidsReferrer = true
 			}
 		case "a":
