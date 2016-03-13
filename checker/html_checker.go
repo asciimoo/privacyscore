@@ -92,7 +92,7 @@ func (c *HTMLChecker) Check(r *result.Result) {
 		r.AddPenalty("Has link to foreign host without HTTP referrer restrictions", 10)
 	}
 	if hasHTTPLink {
-		r.AddPenalty("Has link to unencrypted host", 2)
+		r.AddPenalty("Has link to unencrypted service", 2)
 	}
 }
 
