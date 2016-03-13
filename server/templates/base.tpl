@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8" />
+    <meta name="referrer" content="never" />
     <title>Privacy Score</title>
     <link rel="stylesheet" href="./static/milligram.min.css" />
     <style>
