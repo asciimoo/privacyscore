@@ -21,6 +21,7 @@ type Result struct {
 	URL          *url.URL
 	ForeignHosts []string
 	OriginalURL  *url.URL
+	Cookies      []*http.Cookie
 }
 
 var baseScore penalty.Score = 100
@@ -39,6 +40,7 @@ func New(URL string, r *http.Response) (*Result, error) {
 		r.Request.URL,
 		make([]string, 0),
 		u,
+		r.Cookies(),
 	}, err
 }
 

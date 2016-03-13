@@ -11,6 +11,7 @@ type Checker interface {
 }
 
 var checkers []Checker = []Checker{
+	&CookieChecker{},
 	&HTMLChecker{},
 	&HTTPSChecker{},
 }
