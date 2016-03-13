@@ -50,9 +50,11 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			}
 		case "link":
 			attrs := getAttrs(t)
+			if rel, found := attrs["rel"]; !found || rel != "stylesheet" {
+				break
+			}
 			if _, found := attrs["href"]; found {
 				addExternalPenalty(r, attrs["href"])
-				break
 			}
 		case "img":
 			src, found := getAttr(t, "src")
