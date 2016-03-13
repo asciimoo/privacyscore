@@ -8,6 +8,6 @@ type HTTPSChecker struct{}
 
 func (c *HTTPSChecker) Check(r *result.Result) {
 	if r.URL.Scheme != "https" {
-		r.AddPenalty("Uses unencrypted transport layer (no HTTPS)", 10)
+		r.AddPenalty("Uses unencrypted transport layer (no HTTPS)", 15)
 	}
 }
