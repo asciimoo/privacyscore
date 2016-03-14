@@ -16,6 +16,7 @@ h2 { font-size: 5.2rem; }
 #url_input { color: #606c76; background: #f4f5f6; }
 input.big_input { height: 1.6em; padding: 0 0.4em; font-size: 2.2em; line-height: 1.6em; vertical-align: middle; font-weight: 300; }
 .invisible { display: none; }
+.small { font-size: 0.8em; }
 
 td:first-child, th:first-child { padding-left: 0.6em; }
 td:last-child, th:last-child { padding-right: 0.6em; }
@@ -24,6 +25,7 @@ th:last-child { text-align: right; }
 .result_header { display: flex; align-items: center; }
 .result_url { text-align: center; flex-grow: 1; word-wrap: break-word; }
 .score { color: #fcfbfa; border-radius: 50%; height: 4em; width: 4em; line-height: 4em; text-align: center; flex-shrink: 0; }
+.penalty_link { white-space: nowrap; }
 .penalty_desc { font-size: 1.2em; }
 .penalty_note { background: #606c76; color: #fcfbfa; font-size: 0.7em; border-radius: 0.4em; padding: 2px 6px; }
 .penalty_value { font-size: 1.7em; font-weight: 600; display: block; text-align: right; }

@@ -10,7 +10,10 @@
             <tr><th>Penalty</th><th>Value</th></tr>
                 {{ range .Penalties }}
                 <tr>
-                    <td><span class="penalty_desc">{{ .Description }}</span>{{ if .Notes }}<div>{{ range .Notes }} <span class="penalty_note">{{ . }}</span>{{ end }}</div>{{ end }}</td>
+                    <td>
+                        <span class="penalty_desc">{{ .Description }}</span> <span class="small"><a class="penalty_link" target="_blank" href="{{ .DetailLink }}">(more info)</a></span>
+                        {{ if .Notes }}<div>{{ range .Notes }} <span class="penalty_note">{{ . }}</span>{{ end }}</div>{{ end }}
+                    </td>
                     <td><span class="penalty_value">-{{ .Value }}</span></td>
                 </tr>
                 {{ end }}
