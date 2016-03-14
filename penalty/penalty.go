@@ -11,6 +11,7 @@ const (
 	P_EXTERNAL_RESOURCE PenaltyType = 4
 	P_NO_HTTPS          PenaltyType = 5
 	P_JS                PenaltyType = 6
+	P_NO_SECURE_HEADER  PenaltyType = 7
 )
 
 type Penalty struct {
@@ -42,6 +43,9 @@ func New(p PenaltyType, value Score) *Penalty {
 	case P_JS:
 		desc = "Uses JavaScript"
 		link = "todo"
+	case P_NO_SECURE_HEADER:
+		desc = "Missing secure HTTP header"
+		link = "https://scotthelme.co.uk/hardening-your-http-response-headers/"
 	}
 	return &Penalty{desc, link, make([]string, 0, 8), value}
 }

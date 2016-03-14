@@ -14,16 +14,17 @@ import (
 const maxResponseBodySize = 1024 * 1024 * 5
 
 type Result struct {
-	Penalties    []*penalty.Penalty
-	Errors       []error
-	Score        penalty.Score
-	ResponseBody []byte
-	ContentType  string
-	StatusCode   int
-	URL          *url.URL
-	OriginalURL  *url.URL
-	Cookies      []*http.Cookie
-	Domain       string
+	Penalties      []*penalty.Penalty
+	Errors         []error
+	Score          penalty.Score
+	ResponseBody   []byte
+	ContentType    string
+	StatusCode     int
+	URL            *url.URL
+	OriginalURL    *url.URL
+	Cookies        []*http.Cookie
+	Domain         string
+	ResponseHeader *http.Header
 }
 
 var baseScore penalty.Score = 100
@@ -43,6 +44,7 @@ func New(URL string, r *http.Response) (*Result, error) {
 		u,
 		r.Cookies(),
 		utils.CropSubdomains(u.Host),
+		&r.Header,
 	}, err
 }
 

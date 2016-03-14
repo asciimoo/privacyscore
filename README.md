@@ -7,9 +7,7 @@ todo
 ### TODO
 
  - Checkers
-   - Foreign Redirect
-   - Etag
-   - Secure HTTP headers https://securityheaders.io/
+   - https://jonathanmayer.org/papers_data/trackingsurvey12.pdf
  - About page
  - Description of penalties (+ possible solutions)
  - CLI checker tool

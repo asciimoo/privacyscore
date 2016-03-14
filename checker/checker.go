@@ -19,6 +19,7 @@ var checkers []Checker = []Checker{
 	&CookieChecker{},
 	&HTMLChecker{},
 	&HTTPSChecker{},
+	&SecureHeaderChecker{},
 }
 
 func Run(URL string) (*result.Result, bool) {
