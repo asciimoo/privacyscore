@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./static/milligram.min.css" />
     <style>
 body { background-color: #fcfbfa; margin: 0; padding: 0; }
+h2 { font-size: 5.2rem; }
 .navigation { border-bottom: 1px solid #ddd; background-color: #f4f5f6; }
 .navigation h1 { font-size: 1.4em; padding: 0.4em 0; margin: 0; }
 .main { margin-top: 1em; }
