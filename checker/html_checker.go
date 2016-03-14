@@ -50,9 +50,7 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			src, found := getAttr(t, "src")
 			if found {
 				u, _ := url.Parse(src)
-				if u.Host != r.URL.Host {
-					addHostIfNew(u.Host, &externalResourceHosts)
-				}
+				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
 			}
 		case "link":
 			attrs := getAttrs(t)
@@ -61,15 +59,13 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			}
 			if src, found := attrs["href"]; found {
 				u, _ := url.Parse(src)
-				if u.Host != r.URL.Host {
-					addHostIfNew(u.Host, &externalResourceHosts)
-				}
+				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
 			}
 		case "img":
 			src, found := getAttr(t, "src")
 			u, _ := url.Parse(src)
-			if found && u.Host != r.URL.Host {
-				addHostIfNew(u.Host, &externalResourceHosts)
+			if found {
+				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
 			}
 		case "meta":
 			attrs := getAttrs(t)
@@ -97,8 +93,8 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			if (u.Scheme == "" && r.URL.Scheme != "https") || u.Scheme == "http" {
 				hasHTTPLink = true
 			}
-			if !forbidsReferrer && !noreferrer && u.Host != "" && u.Host != r.URL.Host {
-				addHostIfNew(u.Host, &externalLinkHosts)
+			if !forbidsReferrer && !noreferrer {
+				addHostIfNew(u.Host, r.Domain, &externalLinkHosts)
 			}
 		}
 	}
@@ -115,9 +111,9 @@ func (c *HTMLChecker) Check(r *result.Result) {
 	}
 }
 
-func addHostIfNew(host string, a *[]string) {
+func addHostIfNew(host, self string, a *[]string) {
 	host = utils.CropSubdomains(host)
-	if host == "" {
+	if host == "" || host == self {
 		return
 	}
 	for _, h := range *a {
