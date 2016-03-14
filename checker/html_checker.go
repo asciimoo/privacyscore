@@ -9,7 +9,9 @@ import (
 
 	"golang.org/x/net/html"
 
+	"github.com/asciimoo/privacyscore/penalty"
 	"github.com/asciimoo/privacyscore/result"
+	"github.com/asciimoo/privacyscore/utils"
 )
 
 type HTMLChecker struct{}
@@ -21,7 +23,8 @@ func (c *HTMLChecker) Check(r *result.Result) {
 	}
 	scriptTagFound := false
 	forbidsReferrer := false
-	hasExternalLink := false
+	externalLinkHosts := make([]string, 0, 8)
+	externalResourceHosts := make([]string, 0, 8)
 	hasHTTPLink := false
 	t := html.NewTokenizer(bytes.NewReader(r.ResponseBody))
 	for {
@@ -41,25 +44,28 @@ func (c *HTMLChecker) Check(r *result.Result) {
 		switch string(tagName) {
 		case "script":
 			if !scriptTagFound {
-				r.AddPenalty("Uses javascript", 5)
+				r.AddPenalty(penalty.P_JS, 5)
 				scriptTagFound = true
 			}
 			src, found := getAttr(t, "src")
 			if found {
-				addExternalPenalty(r, src)
+				u, _ := url.Parse(src)
+				addHostIfNew(u.Host, &externalResourceHosts)
 			}
 		case "link":
 			attrs := getAttrs(t)
 			if rel, found := attrs["rel"]; !found || rel != "stylesheet" {
 				break
 			}
-			if _, found := attrs["href"]; found {
-				addExternalPenalty(r, attrs["href"])
+			if src, found := attrs["href"]; found {
+				u, _ := url.Parse(src)
+				addHostIfNew(u.Host, &externalResourceHosts)
 			}
 		case "img":
 			src, found := getAttr(t, "src")
+			u, _ := url.Parse(src)
 			if found {
-				addExternalPenalty(r, src)
+				addHostIfNew(u.Host, &externalResourceHosts)
 			}
 		case "meta":
 			attrs := getAttrs(t)
@@ -74,35 +80,48 @@ func (c *HTMLChecker) Check(r *result.Result) {
 				forbidsReferrer = true
 			}
 		case "a":
-			src, found := getAttr(t, "href")
+			attrs := getAttrs(t)
+			src, found := attrs["href"]
 			if !found {
 				break
+			}
+			noreferrer := false
+			if rel, found := attrs["rel"]; found && rel == "noreferrer" {
+				noreferrer = true
 			}
 			u, _ := url.Parse(src)
 			if (u.Scheme == "" && r.URL.Scheme != "https") || u.Scheme == "http" {
 				hasHTTPLink = true
 			}
-			if forbidsReferrer || hasExternalLink {
-				break
-			}
-			if r.IsNewForeignHost(u) {
-				hasExternalLink = true
+			if !forbidsReferrer && !noreferrer {
+				addHostIfNew(u.Host, &externalLinkHosts)
 			}
 		}
 	}
-	if hasExternalLink && !forbidsReferrer {
-		r.AddPenalty("Has link to foreign host without HTTP referrer restrictions", 10)
+	if len(externalLinkHosts) > 0 {
+		p := r.AddPenalty(penalty.P_EXTERNAL_LINK, 2)
+		p.Notes = externalLinkHosts
 	}
 	if hasHTTPLink {
-		r.AddPenalty("Has link to unencrypted service", 2)
+		r.AddPenalty(penalty.P_HTTP_LINK, 2)
+	}
+	if len(externalResourceHosts) > 0 {
+		p := r.AddPenalty(penalty.P_EXTERNAL_RESOURCE, penalty.Score(len(externalResourceHosts)*10))
+		p.Notes = externalResourceHosts
 	}
 }
 
-func addExternalPenalty(r *result.Result, src string) {
-	u, _ := url.Parse(src)
-	if r.IsNewForeignHost(u) {
-		r.AddPenalty("Loads external resource from "+result.CropSubdomains(u.Host), 10)
+func addHostIfNew(host string, a *[]string) {
+	host = utils.CropSubdomains(host)
+	if host == "" {
+		return
 	}
+	for _, h := range *a {
+		if h == host {
+			return
+		}
+	}
+	*a = append(*a, host)
 }
 
 func getAttr(t *html.Tokenizer, name string) (string, bool) {

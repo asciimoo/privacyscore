@@ -8,7 +8,12 @@
     <div class="column">
         <table>
             <tr><th>Penalty</th><th>Value</th></tr>
-                {{ range .Penalties }}<tr><td>{{ .Description }}</td><td>-{{ .Value }}</td></tr>{{ end }}
+                {{ range .Penalties }}
+                <tr>
+                    <td><span class="penalty_desc">{{ .Description }}</span>{{ if .Notes }}<div>{{ range .Notes }} <span class="penalty_note">{{ . }}</span>{{ end }}</div>{{ end }}</td>
+                    <td><span class="penalty_value">-{{ .Value }}</span></td>
+                </tr>
+                {{ end }}
         </table>
     </div>
     {{ end }}
