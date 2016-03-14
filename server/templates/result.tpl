@@ -4,8 +4,8 @@
     <h3 class="score {{ .GetScoreName }}"><span class="invisible">Score: </span>{{ .Score }}/100</h3>
 </div>
 <div class="row">
-    {{ if .Penalties }}
     <div class="column">
+    {{ if .Penalties }}
         <table>
             <tr><th>Penalty</th><th>Value</th></tr>
                 {{ range .Penalties }}
@@ -18,8 +18,10 @@
                 </tr>
                 {{ end }}
         </table>
-    </div>
+    {{ else }}
+        <h3 class="nopenalties">Hurray, no penalties</h3>
     {{ end }}
+    </div>
     {{ if .Errors }}
     <div class="column">
         <table>

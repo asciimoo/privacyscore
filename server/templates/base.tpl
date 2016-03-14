@@ -22,6 +22,7 @@ td:first-child, th:first-child { padding-left: 0.6em; }
 td:last-child, th:last-child { padding-right: 0.6em; }
 th:last-child { text-align: right; }
 
+.nopenalties { text-align: center; margin-top: 2em; color: #40d47e; }
 .result_header { display: flex; align-items: center; }
 .result_url { text-align: center; flex-grow: 1; word-wrap: break-word; }
 .score { color: #fcfbfa; border-radius: 50%; height: 4em; width: 4em; line-height: 4em; text-align: center; flex-shrink: 0; }
