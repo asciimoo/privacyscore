@@ -1,8 +1,12 @@
 ## Privacy Score
 
-### Install
+### Install and run
 
-todo
+```
+go get github.com/asciimoo/privacyscore
+cd "$GOPATH/src/github.com/asciimoo/privacyscore"
+go run privacyscore.go
+```
 
 ### TODO
 
