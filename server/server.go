@@ -56,6 +56,7 @@ func serveAboutPage(w http.ResponseWriter, request *http.Request) {
 func checkURL(w http.ResponseWriter, request *http.Request) {
 	url := request.FormValue("url")
 	results, _ := checker.Run(url)
+	log.Println("[check]", url, results.Score)
 	renderTemplate(w, "result.tpl", results)
 }
 

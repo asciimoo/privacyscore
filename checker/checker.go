@@ -2,9 +2,13 @@ package checker
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/asciimoo/privacyscore/result"
 )
+
+const USER_AGENT = "PrivacyScore Checker v0.1.0"
+const TIMEOUT = 3
 
 type Checker interface {
 	Check(*result.Result)
@@ -18,7 +22,15 @@ var checkers []Checker = []Checker{
 
 func Run(URL string) (*result.Result, bool) {
 	var r *result.Result
-	response, err := http.Get(URL)
+	client := http.Client{Timeout: time.Duration(TIMEOUT * time.Second)}
+	req, err := http.NewRequest("GET", URL, nil)
+	if err != nil {
+		r = &result.Result{}
+		r.AddError(err)
+		return r, false
+	}
+	req.Header.Set("User-Agent", USER_AGENT)
+	response, err := client.Do(req)
 	if err != nil {
 		r = &result.Result{}
 		r.AddError(err)
