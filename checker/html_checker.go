@@ -50,7 +50,9 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			src, found := getAttr(t, "src")
 			if found {
 				u, _ := url.Parse(src)
-				addHostIfNew(u.Host, &externalResourceHosts)
+				if u.Host != r.URL.Host {
+					addHostIfNew(u.Host, &externalResourceHosts)
+				}
 			}
 		case "link":
 			attrs := getAttrs(t)
@@ -59,12 +61,14 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			}
 			if src, found := attrs["href"]; found {
 				u, _ := url.Parse(src)
-				addHostIfNew(u.Host, &externalResourceHosts)
+				if u.Host != r.URL.Host {
+					addHostIfNew(u.Host, &externalResourceHosts)
+				}
 			}
 		case "img":
 			src, found := getAttr(t, "src")
 			u, _ := url.Parse(src)
-			if found {
+			if found && u.Host != r.URL.Host {
 				addHostIfNew(u.Host, &externalResourceHosts)
 			}
 		case "meta":
@@ -93,7 +97,7 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			if (u.Scheme == "" && r.URL.Scheme != "https") || u.Scheme == "http" {
 				hasHTTPLink = true
 			}
-			if !forbidsReferrer && !noreferrer {
+			if !forbidsReferrer && !noreferrer && u.Host != "" && u.Host != r.URL.Host {
 				addHostIfNew(u.Host, &externalLinkHosts)
 			}
 		}
