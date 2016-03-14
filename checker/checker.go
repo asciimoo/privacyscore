@@ -2,6 +2,7 @@ package checker
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/asciimoo/privacyscore/result"
@@ -21,6 +22,9 @@ var checkers []Checker = []Checker{
 }
 
 func Run(URL string) (*result.Result, bool) {
+	if !strings.HasPrefix(URL, "http://") && !strings.HasPrefix(URL, "https://") {
+		URL = "http://" + URL
+	}
 	var r *result.Result
 	client := http.Client{Timeout: time.Duration(TIMEOUT * time.Second)}
 	req, err := http.NewRequest("GET", URL, nil)
