@@ -69,13 +69,14 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			}
 		case "img":
 			src, found := getAttr(t, "src")
+			if !found {
+				break
+			}
 			u, err := url.Parse(src)
 			if err != nil {
 				break
 			}
-			if found {
-				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
-			}
+			addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
 		case "meta":
 			attrs := getAttrs(t)
 			if _, found := attrs["name"]; !found || attrs["name"] != "referrer" {
