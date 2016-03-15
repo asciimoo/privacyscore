@@ -49,7 +49,10 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			}
 			src, found := getAttr(t, "src")
 			if found {
-				u, _ := url.Parse(src)
+				u, err := url.Parse(src)
+				if err != nil {
+					break
+				}
 				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
 			}
 		case "link":
@@ -58,12 +61,18 @@ func (c *HTMLChecker) Check(r *result.Result) {
 				break
 			}
 			if src, found := attrs["href"]; found {
-				u, _ := url.Parse(src)
+				u, err := url.Parse(src)
+				if err != nil {
+					break
+				}
 				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
 			}
 		case "img":
 			src, found := getAttr(t, "src")
-			u, _ := url.Parse(src)
+			u, err := url.Parse(src)
+			if err != nil {
+				break
+			}
 			if found {
 				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
 			}
@@ -89,7 +98,10 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			if rel, found := attrs["rel"]; found && rel == "noreferrer" {
 				noreferrer = true
 			}
-			u, _ := url.Parse(src)
+			u, err := url.Parse(src)
+			if err != nil {
+				break
+			}
 			if (u.Scheme == "" && r.URL.Scheme != "https") || u.Scheme == "http" {
 				hasHTTPLink = true
 			}
