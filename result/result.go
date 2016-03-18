@@ -32,7 +32,6 @@ var mutex = &sync.Mutex{}
 
 func New(URL string, r *http.Response) (*Result, error) {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
-	r.Body.Close()
 	u, _ := url.Parse(URL)
 	return &Result{
 		make([]*penalty.Penalty, 0),
