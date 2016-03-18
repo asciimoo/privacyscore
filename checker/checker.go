@@ -9,7 +9,7 @@ import (
 )
 
 const USER_AGENT = "Mozilla/5.0 (compatible) PrivacyScore Checker v0.1.0"
-const TIMEOUT = 3
+const TIMEOUT = 5
 
 type Checker interface {
 	Check(*result.Result)
