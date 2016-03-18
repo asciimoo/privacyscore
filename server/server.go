@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"path"
+	"runtime"
 
 	"github.com/asciimoo/privacyscore/checker"
 )
@@ -13,7 +15,14 @@ var (
 	milligramURL string = "https://milligram.github.io/css/milligram.min.css"
 )
 
+var BASE_DIR string
+
 func init() {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		log.Fatal("No caller information")
+	}
+	BASE_DIR = path.Dir(filename)
 	resp, err := http.Get(milligramURL)
 	if err != nil {
 		log.Fatal("Cannot fetch milligram.css:", err)
@@ -22,6 +31,7 @@ func init() {
 	if err != nil {
 		log.Fatal("Cannot fetch milligram.css:", err)
 	}
+	resp.Body.Close()
 	initTemplates()
 }
 

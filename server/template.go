@@ -11,7 +11,7 @@ var templates map[string]*template.Template
 
 func initTemplates() {
 	templates = make(map[string]*template.Template)
-	templateDir := "server/templates/"
+	templateDir := BASE_DIR + "/templates/"
 	basePath := templateDir + "base.tpl"
 	templateFiles, _ := filepath.Glob(templateDir + "*.tpl")
 	for _, f := range templateFiles {
