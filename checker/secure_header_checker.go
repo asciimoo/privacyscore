@@ -20,7 +20,7 @@ func (c *SecureHeaderChecker) Check(r *result.Result) {
 	}
 	if len(missingSecureHeaders) > 0 {
 		// TODO scoring
-		p := r.AddPenalty(penalty.P_NO_SECURE_HEADER, penalty.Score(len(missingSecureHeaders)*3))
+		p := r.AddPenalty(penalty.P_NO_SECURE_HEADER, penalty.Score(len(missingSecureHeaders)*2))
 		p.Notes = missingSecureHeaders
 	}
 }
