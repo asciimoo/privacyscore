@@ -15,6 +15,9 @@ func (c *SecureHeaderChecker) Check(r *result.Result) {
 	if r.ResponseHeader.Get("X-Content-Type-Options") != "nosniff" {
 		missingSecureHeaders = append(missingSecureHeaders, "X-Content-Type-Options")
 	}
+	if r.URL.Scheme == "https" && r.ResponseHeader.Get("Strict-Transport-Security") == "" {
+		missingSecureHeaders = append(missingSecureHeaders, "Strict-Transport-Security")
+	}
 	if len(missingSecureHeaders) > 0 {
 		// TODO scoring
 		p := r.AddPenalty(penalty.P_NO_SECURE_HEADER, penalty.Score(len(missingSecureHeaders)*3))
