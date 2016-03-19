@@ -5,9 +5,15 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+
+	"github.com/asciimoo/privacyscore/utils"
 )
 
 var templates map[string]*template.Template
+
+var funcMap = template.FuncMap{
+	"GetScoreName": utils.GetScoreName,
+}
 
 func initTemplates() {
 	templates = make(map[string]*template.Template)
@@ -18,7 +24,7 @@ func initTemplates() {
 		if f == basePath {
 			continue
 		}
-		templates[filepath.Base(f)] = template.Must(template.ParseFiles(f, basePath))
+		templates[filepath.Base(f)] = template.Must(template.New("").Funcs(funcMap).ParseFiles(f, basePath))
 	}
 }
 

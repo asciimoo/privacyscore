@@ -66,15 +66,3 @@ func (r *Result) AddPenalty(pt penalty.PenaltyType, s penalty.Score) *penalty.Pe
 	mutex.Unlock()
 	return p
 }
-
-func (r *Result) GetScoreName() string {
-	switch {
-	case r.Score >= 80:
-		return "good"
-	case r.Score >= 50:
-		return "medium"
-	case r.Score >= 0:
-		return "bad"
-	}
-	return "poor"
-}
