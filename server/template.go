@@ -36,7 +36,7 @@ func renderTemplate(w http.ResponseWriter, name string, data interface{}) error 
 	}
 	err := tmpl.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatal("Template execution error: ", err)
+		log.Println("Template execution error: ", err)
 	}
 	return err
 }
