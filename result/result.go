@@ -30,10 +30,10 @@ type Result struct {
 var baseScore penalty.Score = 100
 var mutex = &sync.Mutex{}
 
-func New(URL string, r *http.Response) (*Result, error) {
+func New(URL string, r *http.Response) *Result {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
 	u, _ := url.Parse(URL)
-	return &Result{
+	result := &Result{
 		make([]*penalty.Penalty, 0),
 		make([]error, 0, 8),
 		baseScore,
@@ -45,7 +45,11 @@ func New(URL string, r *http.Response) (*Result, error) {
 		r.Cookies(),
 		utils.CropSubdomains(u.Host),
 		&r.Header,
-	}, err
+	}
+	if err != nil {
+		result.AddError(err)
+	}
+	return result
 }
 
 func (r *Result) AddError(e error) {

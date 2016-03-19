@@ -67,9 +67,16 @@ func serveAboutPage(w http.ResponseWriter, request *http.Request) {
 
 func checkURL(w http.ResponseWriter, request *http.Request) {
 	url := request.FormValue("url")
-	results, _ := checker.Run(url)
-	log.Println("[check]", url, results.Score)
-	renderTemplate(w, "result.tpl", results)
+	results, err := checker.Run(url)
+	if err != nil {
+		log.Println("[check][error]", url, err)
+		renderTemplate(w, "error.tpl", struct {
+			Error error
+		}{err})
+	} else {
+		log.Println("[check]", url, results.Score)
+		renderTemplate(w, "result.tpl", results)
+	}
 }
 
 func serveMilligramCSS(w http.ResponseWriter, request *http.Request) {

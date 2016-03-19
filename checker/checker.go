@@ -22,7 +22,7 @@ var checkers []Checker = []Checker{
 	&SecureHeaderChecker{},
 }
 
-func Run(URL string) (*result.Result, bool) {
+func Run(URL string) (*result.Result, error) {
 	if !strings.HasPrefix(URL, "http://") && !strings.HasPrefix(URL, "https://") {
 		URL = "http://" + URL
 	}
@@ -35,24 +35,17 @@ func Run(URL string) (*result.Result, bool) {
 	}
 	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
-		r = &result.Result{}
-		r.AddError(err)
-		return r, false
+		return r, err
 	}
 	req.Header.Set("User-Agent", USER_AGENT)
 	response, err := client.Do(req)
 	if err != nil {
-		r = &result.Result{}
-		r.AddError(err)
-		return r, false
+		return r, err
 	}
 	defer response.Body.Close()
-	r, err = result.New(URL, response)
-	if err != nil {
-		r.AddError(err)
-	}
+	r = result.New(URL, response)
 	for _, c := range checkers {
 		c.Check(r)
 	}
-	return r, true
+	return r, nil
 }
