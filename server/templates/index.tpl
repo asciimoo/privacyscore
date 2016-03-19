@@ -1,4 +1,12 @@
 {{ define "content" }}
+<div class="row stats">
+    {{ range .Stats }}
+    <div class="column stat_container" title="{{ .Label }}: {{ .Count }}">
+        <div class="{{ GetScoreName .BaseScore }} stat_col" style="height: {{ statHeight .Count $.StatEntryCount }}%"> </div>
+    </div>
+    {{ end }}
+    <h4>Aggregated scores of previous checks</h4>
+</div>
 <form method="get" action="./check">
     <div class="row" id="main_form">
         <div class="column">

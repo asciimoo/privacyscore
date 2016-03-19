@@ -18,9 +18,9 @@ func GetScoreName(s penalty.Score) string {
 	switch {
 	case s >= 80:
 		return "good"
-	case s >= 50:
+	case s >= 60:
 		return "medium"
-	case s >= 0:
+	case s >= 40:
 		return "bad"
 	}
 	return "poor"

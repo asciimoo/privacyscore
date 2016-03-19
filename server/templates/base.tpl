@@ -9,21 +9,33 @@
     <style>
 body { background-color: #fcfbfa; margin: 0; padding: 0; }
 h2 { font-size: 5.2rem; }
+a { color: #2980b9; }
 .navigation { border-bottom: 1px solid #ddd; background-color: #f4f5f6; }
 .navigation h1 { font-size: 1.4em; padding: 0.4em 0; margin: 0; }
-.main { margin-top: 1em; }
-#main_form { margin-top: 5em; }
+#main_form { margin: 2em 0; }
 #url_input { color: #606c76; background: #f4f5f6; }
 input.big_input { height: 1.6em; padding: 0 0.4em; font-size: 2.2em; line-height: 1.6em; vertical-align: middle; font-weight: 300; }
+input.big_input:focus { border: 0.1rem solid #2980b9; }
+input[type="submit"].big_input { background-color: #2980b9 !important; border: 0.1rem solid #2980b9; }
+.row { margin-left: 0; }
 .invisible { display: none; }
 .small { font-size: 0.8em; }
+.stats { position: relative; }
+.stats h4 { font-size: 1.2em; transition: opacity 1s ease; opacity: 0; position: absolute; bottom: 0; left: 0; padding: 0; margin: 0; }
+.stats:hover h4 { transition: opacity 2s ease; opacity: 1; }
+.stat_container { height: 5em; text-align: center; opacity: 0.6; }
+.stat_container:hover { opacity: 1; background: #f4f5f6; }
+.stat_col { width: 100%; padding: 0; margin: 0; min-height: 1px; flex-direction: row; }
+@media (max-width: 40.0rem) {
+    .stat_container, .stat_col { display: none; }
+}
 
 td:first-child, th:first-child { padding-left: 0.6em; }
 td:last-child, th:last-child { padding-right: 0.6em; }
 th:last-child { text-align: right; }
 
 .nopenalties { text-align: center; margin-top: 2em; color: #40d47e; }
-.result_header { display: flex; align-items: center; }
+.result_header { display: flex; align-items: center; margin-top: 1em; }
 .result_url { text-align: center; flex-grow: 1; word-wrap: break-word; }
 .score { color: #fcfbfa; border-radius: 50%; height: 4em; width: 4em; line-height: 4em; text-align: center; flex-shrink: 0; }
 .penalty_link { white-space: nowrap; }

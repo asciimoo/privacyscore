@@ -8,6 +8,7 @@ import (
 	"runtime"
 
 	"github.com/asciimoo/privacyscore/checker"
+	"github.com/asciimoo/privacyscore/scoredb"
 )
 
 var (
@@ -58,7 +59,10 @@ func requestRouter(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveIndexPage(w http.ResponseWriter, request *http.Request) {
-	renderTemplate(w, "index.tpl", nil)
+	renderTemplate(w, "index.tpl", struct {
+		Stats          []*scoredb.ScoreCount
+		StatEntryCount uint
+	}{scoredb.GetAll(), scoredb.GetTopEntryCount()})
 }
 
 func serveAboutPage(w http.ResponseWriter, request *http.Request) {
@@ -75,6 +79,7 @@ func checkURL(w http.ResponseWriter, request *http.Request) {
 		}{err})
 	} else {
 		log.Println("[check]", url, results.Score)
+		scoredb.Add(results.Score)
 		renderTemplate(w, "result.tpl", results)
 	}
 }

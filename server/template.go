@@ -13,6 +13,7 @@ var templates map[string]*template.Template
 
 var funcMap = template.FuncMap{
 	"GetScoreName": utils.GetScoreName,
+	"statHeight":   statHeight,
 }
 
 func initTemplates() {
@@ -38,4 +39,11 @@ func renderTemplate(w http.ResponseWriter, name string, data interface{}) error 
 		log.Fatal("Template execution error: ", err)
 	}
 	return err
+}
+
+func statHeight(a, b uint) uint {
+	if b == 0 {
+		return 0
+	}
+	return a * 100 / b
 }
