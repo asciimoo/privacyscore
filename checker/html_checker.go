@@ -21,11 +21,12 @@ func (c *HTMLChecker) Check(r *result.Result) {
 		r.AddError(errors.New("No HTML content found"))
 		return
 	}
-	scriptTagFound := false
 	forbidsReferrer := false
+	hasHTTPLink := false
+	scriptTagFound := false
+	externalIFrameHosts := make([]string, 0, 8)
 	externalLinkHosts := make([]string, 0, 8)
 	externalResourceHosts := make([]string, 0, 8)
-	hasHTTPLink := false
 	t := html.NewTokenizer(bytes.NewReader(r.ResponseBody))
 	for {
 		tagToken := t.Next()
@@ -54,6 +55,14 @@ func (c *HTMLChecker) Check(r *result.Result) {
 					break
 				}
 				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
+			}
+		case "iframe":
+			src, found := getAttr(t, "src")
+			if found {
+				u, err := url.Parse(src)
+				if err == nil {
+					addHostIfNew(u.Host, r.Domain, &externalIFrameHosts)
+				}
 			}
 		case "link":
 			attrs := getAttrs(t)
@@ -110,6 +119,10 @@ func (c *HTMLChecker) Check(r *result.Result) {
 				addHostIfNew(u.Host, r.Domain, &externalLinkHosts)
 			}
 		}
+	}
+	if len(externalIFrameHosts) > 0 {
+		p := r.AddPenalty(penalty.P_IFRAME, penalty.Score(len(externalIFrameHosts)*5))
+		p.Notes = externalIFrameHosts
 	}
 	if len(externalLinkHosts) > 0 {
 		p := r.AddPenalty(penalty.P_EXTERNAL_LINK, 2)

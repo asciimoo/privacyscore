@@ -12,6 +12,7 @@ const (
 	P_NO_HTTPS          PenaltyType = 5
 	P_JS                PenaltyType = 6
 	P_NO_SECURE_HEADER  PenaltyType = 7
+	P_IFRAME            PenaltyType = 8
 )
 
 type Penalty struct {
@@ -46,6 +47,9 @@ func New(p PenaltyType, value Score) *Penalty {
 	case P_NO_SECURE_HEADER:
 		desc = "Missing secure HTTP header"
 		link = "https://scotthelme.co.uk/hardening-your-http-response-headers/"
+	case P_IFRAME:
+		desc = "Loads external content to iframe"
+		link = "http://stackoverflow.com/questions/7289139/why-are-iframes-considered-dangerous-and-a-security-risk"
 	}
 	return &Penalty{desc, link, make([]string, 0, 8), value}
 }
