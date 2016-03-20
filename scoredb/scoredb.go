@@ -49,6 +49,9 @@ func Add(s penalty.Score) {
 	} else {
 		idx = int((int(s)-minScore)/step) + 1
 	}
+	if idx >= len(scores.DB) {
+		idx = len(scores.DB) - 1
+	}
 	scores.Lock()
 	scores.EntryCount += 1
 	scores.DB[idx].Count += 1
