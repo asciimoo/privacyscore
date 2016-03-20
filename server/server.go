@@ -44,6 +44,7 @@ func Run(listen *string) error {
 func requestRouter(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Xss-Protection", "1; mode=block")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("X-Frame-Options", "DENY")
 	switch r.URL.Path {
 	case "/":
 		serveIndexPage(w, r)
