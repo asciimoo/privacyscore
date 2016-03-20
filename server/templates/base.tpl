@@ -10,11 +10,12 @@
 body { background-color: #fcfbfa; margin: 0; padding: 0; }
 h2 { font-size: 5.2rem; }
 a { color: #2980b9; }
-.navigation { border-bottom: 1px solid #ddd; background-color: #f4f5f6; height: 5.2rem; }
+.navigation { border-bottom: 1px solid #ddd; background-color: #f4f5f6; height: 5.2rem; position: fixed; top: 0; left: 0; right: 0; z-index: 98; }
 .navigation h1 { font-size: 1.4em; padding: 0.4em 0; margin: 0; }
 .navigation-title, .navigation .title { display: inline; line-height: 5.2rem; margin-right: 5.0rem; }
 .github-corner { border: 0; color: #f4f5f6; fill: #606c76; height: 5.2rem; position: fixed; right: 0; z-index: 99; top: 0; width: 5.2rem; }
 .github-corner:hover { fill: #2980b9; }
+.main { margin-top: 5.2rem; }
 #main_form { margin: 2em 0; }
 #url_input { color: #606c76; background: #f4f5f6; }
 input.big_input { height: 1.6em; padding: 0 0.4em; font-size: 2.2em; line-height: 1.6em; vertical-align: middle; font-weight: 300; }
@@ -38,7 +39,7 @@ td:last-child, th:last-child { padding-right: 0.6em; }
 th:last-child { text-align: right; }
 
 .nopenalties { text-align: center; margin-top: 2em; color: #40d47e; }
-.result_header { display: flex; align-items: center; margin-top: 1em; }
+.result_header { display: flex; align-items: center; margin-top: 6.2rem; }
 .result_url { text-align: center; flex-grow: 1; word-wrap: break-word; }
 .score { color: #fcfbfa; border-radius: 50%; height: 4em; width: 4em; line-height: 4em; text-align: center; flex-shrink: 0; }
 .penalty_link { white-space: nowrap; }
