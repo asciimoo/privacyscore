@@ -1,8 +1,9 @@
 {{ define "content" }}
 <div class="row stats">
     {{ range .Stats }}
-    <div class="column stat_container" title="{{ .Label }}: {{ .Count }}">
+    <div class="column stat_container">
         <div class="{{ GetScoreName .BaseScore }} stat_col" style="height: {{ statHeight .Count $.StatEntryCount }}%"> </div>
+        <div class="stat_tooltip">Score {{ .Label }}:<br />{{ .Count }}</div>
     </div>
     {{ end }}
     <h4>Aggregated scores of previous checks</h4>

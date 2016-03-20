@@ -27,8 +27,10 @@ input[type="submit"].big_input { background-color: #2980b9 !important; border: 0
 .stats { position: relative; }
 .stats h4 { font-size: 1.2em; transition: opacity 1s ease; opacity: 0; position: absolute; bottom: 0; left: 0; padding: 0; margin: 0; }
 .stats:hover h4 { transition: opacity 2s ease; opacity: 1; }
-.stat_container { height: 5em; text-align: center; opacity: 0.6; }
-.stat_container:hover { opacity: 1; background: #f4f5f6; }
+.stat_container { height: 5em; text-align: center; opacity: 0.6; position: relative; }
+.stat_container:hover { opacity: 1; }
+.stat_tooltip { transition: opacity 1s ease; opacity: 0; font-size: 0.7em; font-weight: 600; color: #2c3e50; position: absolute; left: 0; right: 0; top: -5.2rem; height: 5.2rem; z-index: 100; background: #f4f5f6; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; }
+.stat_container:hover .stat_tooltip { transition: opacity 1s ease; opacity: 1; }
 .stat_col { width: 100%; padding: 0; margin: 0; min-height: 1px; flex-direction: row; }
 @media (max-width: 40.0rem) {
     .stat_container, .stat_col { display: none; }
