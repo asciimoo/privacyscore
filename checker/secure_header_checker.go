@@ -9,6 +9,12 @@ type SecureHeaderChecker struct{}
 
 func (c *SecureHeaderChecker) Check(r *result.Result) {
 	missingSecureHeaders := make([]string, 0, 8)
+	switch r.ResponseHeader.Get("X-Frame-Options") {
+	case "DENY", "SAMEORIGIN":
+		break
+	default:
+		missingSecureHeaders = append(missingSecureHeaders, "X-Frame-Options")
+	}
 	if r.ResponseHeader.Get("X-Xss-Protection") != "1; mode=block" {
 		missingSecureHeaders = append(missingSecureHeaders, "X-Xss-Protection")
 	}
