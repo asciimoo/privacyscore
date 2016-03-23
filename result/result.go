@@ -43,7 +43,7 @@ func New(URL string, r *http.Response) *Result {
 		r.Request.URL,
 		u,
 		r.Cookies(),
-		utils.CropSubdomains(u.Host),
+		utils.CropSubdomains(r.Request.URL.Host),
 		&r.Header,
 	}
 	if err != nil {
