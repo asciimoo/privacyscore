@@ -44,6 +44,9 @@ func (c *PenaltyContainer) GetAll() map[PenaltyType]*Penalty {
 func (c *PenaltyContainer) Add(pt PenaltyType, notes ...string) {
 	if p, found := c.penalties[pt]; found {
 		for _, n := range notes {
+			if n == "" {
+				continue
+			}
 			note_found := false
 			for _, pn := range p.Notes {
 				if pn == n {
