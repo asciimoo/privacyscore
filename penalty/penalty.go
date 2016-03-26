@@ -1,5 +1,9 @@
 package penalty
 
+import (
+	"sync"
+)
+
 type Score int
 
 type PenaltyType int
@@ -15,41 +19,104 @@ const (
 	P_IFRAME            PenaltyType = 8
 )
 
+const baseScore Score = 100
+
 type Penalty struct {
 	Description string
 	DetailLink  string
 	Notes       []string
-	Value       Score
+	value       Score
 }
 
-func New(p PenaltyType, value Score) *Penalty {
+type PenaltyContainer struct {
+	sync.RWMutex
+	penalties map[PenaltyType]*Penalty
+}
+
+func NewPenaltyContainer() *PenaltyContainer {
+	return &PenaltyContainer{penalties: make(map[PenaltyType]*Penalty)}
+}
+
+func (c *PenaltyContainer) GetAll() map[PenaltyType]*Penalty {
+	return c.penalties
+}
+
+func (c *PenaltyContainer) Add(pt PenaltyType, notes ...string) {
+	if p, found := c.penalties[pt]; found {
+		for _, n := range notes {
+			note_found := false
+			for _, pn := range p.Notes {
+				if pn == n {
+					note_found = true
+					break
+				}
+			}
+			if !note_found {
+				c.Lock()
+				p.Notes = append(p.Notes, n)
+				c.Unlock()
+			}
+		}
+	} else {
+		c.Lock()
+		c.penalties[pt] = New(pt)
+		c.penalties[pt].Notes = notes
+		c.Unlock()
+	}
+}
+
+func (c *PenaltyContainer) GetScore() Score {
+	score := baseScore
+	for _, p := range c.penalties {
+		score -= p.GetValue()
+	}
+	return score
+}
+
+func (p *Penalty) GetValue() Score {
+	if len(p.Notes) > 0 {
+		return p.value * Score(len(p.Notes))
+	}
+	return p.value
+}
+
+func New(p PenaltyType) *Penalty {
 	desc := ""
 	link := ""
+	var score Score = 0
 	switch p {
 	case P_COOKIE:
 		desc = "Automatically sets cookies"
 		link = "https://en.wikipedia.org/wiki/Internet_privacy#HTTP_cookies"
+		score = 3
 	case P_EXTERNAL_LINK:
 		desc = "Leaks HTTP referrer to foreign host"
 		link = "https://randomoracle.wordpress.com/2013/11/23/privacy-and-http-referer-header-12/"
+		score = 3
 	case P_HTTP_LINK:
 		desc = "Has link to unencrypted service (no HTTPS)"
 		link = "https://en.wikipedia.org/wiki/HTTP_Secure"
+		score = 3
 	case P_EXTERNAL_RESOURCE:
 		desc = "Loads external resource"
 		link = "https://jonathanmayer.org/papers_data/trackingsurvey12.pdf"
+		score = 3
 	case P_NO_HTTPS:
 		desc = "Uses unencrypted transport layer (no HTTPS)"
 		link = "https://en.wikipedia.org/wiki/HTTP_Secure"
+		score = 3
 	case P_JS:
 		desc = "Uses JavaScript"
 		link = "todo"
+		score = 3
 	case P_NO_SECURE_HEADER:
 		desc = "Missing secure HTTP header"
 		link = "https://scotthelme.co.uk/hardening-your-http-response-headers/"
+		score = 3
 	case P_IFRAME:
 		desc = "Loads external content to iframe"
 		link = "http://stackoverflow.com/questions/7289139/why-are-iframes-considered-dangerous-and-a-security-risk"
+		score = 3
 	}
-	return &Penalty{desc, link, make([]string, 0, 8), value}
+	return &Penalty{desc, link, make([]string, 0, 8), score}
 }

@@ -1,20 +1,20 @@
 {{ define "content" }}
 <div class="result_header">
-    <h3 class="result_url">{{ .URL }}</h3>
-    <h3 class="score {{ GetScoreName .Score }}"><span class="invisible">Score: </span>{{ .Score }}/100</h3>
+    <h3 class="result_url">{{ .BaseURL }}</h3>
+    <h3 class="score {{ GetScoreName .Penalties.GetScore }}"><span class="invisible">Score: </span>{{ .Penalties.GetScore }}/100</h3>
 </div>
 <div class="row">
-    {{ if .Penalties }}
+    {{ if .Penalties.GetAll }}
     <div class="column">
         <table>
             <tr><th>Penalty</th><th>Value</th></tr>
-                {{ range .Penalties }}
+                {{ range .Penalties.GetAll }}
                 <tr>
                     <td>
                         <span class="penalty_desc">{{ .Description }}</span> <span class="small"><a class="penalty_link" target="_blank" href="{{ .DetailLink }}">(more info)</a></span>
                         {{ if .Notes }}<div>{{ range .Notes }} <span class="penalty_note">{{ . }}</span>{{ end }}</div>{{ end }}
                     </td>
-                    <td><span class="penalty_value">-{{ .Value }}</span></td>
+                    <td><span class="penalty_value">-{{ .GetValue }}</span></td>
                 </tr>
                 {{ end }}
         </table>

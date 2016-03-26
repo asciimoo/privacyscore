@@ -7,26 +7,24 @@ import (
 
 type SecureHeaderChecker struct{}
 
-func (c *SecureHeaderChecker) Check(r *result.Result) {
+func (c *SecureHeaderChecker) Check(r *result.Result, p *PageInfo) {
 	missingSecureHeaders := make([]string, 0, 8)
-	switch r.ResponseHeader.Get("X-Frame-Options") {
+	switch p.ResponseHeader.Get("X-Frame-Options") {
 	case "DENY", "SAMEORIGIN":
 		break
 	default:
 		missingSecureHeaders = append(missingSecureHeaders, "X-Frame-Options")
 	}
-	if r.ResponseHeader.Get("X-Xss-Protection") != "1; mode=block" {
+	if p.ResponseHeader.Get("X-Xss-Protection") != "1; mode=block" {
 		missingSecureHeaders = append(missingSecureHeaders, "X-Xss-Protection")
 	}
-	if r.ResponseHeader.Get("X-Content-Type-Options") != "nosniff" {
+	if p.ResponseHeader.Get("X-Content-Type-Options") != "nosniff" {
 		missingSecureHeaders = append(missingSecureHeaders, "X-Content-Type-Options")
 	}
-	if r.URL.Scheme == "https" && r.ResponseHeader.Get("Strict-Transport-Security") == "" {
+	if p.URL.Scheme == "https" && p.ResponseHeader.Get("Strict-Transport-Security") == "" {
 		missingSecureHeaders = append(missingSecureHeaders, "Strict-Transport-Security")
 	}
 	if len(missingSecureHeaders) > 0 {
-		// TODO scoring
-		p := r.AddPenalty(penalty.P_NO_SECURE_HEADER, penalty.Score(len(missingSecureHeaders)*2))
-		p.Notes = missingSecureHeaders
+		r.Penalties.Add(penalty.P_NO_SECURE_HEADER, missingSecureHeaders...)
 	}
 }

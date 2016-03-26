@@ -79,8 +79,8 @@ func checkURL(w http.ResponseWriter, request *http.Request) {
 			Error error
 		}{err})
 	} else {
-		log.Println("[check]", url, results.Score)
-		scoredb.Add(results.Score)
+		log.Println("[check]", url, results.Penalties.GetScore())
+		scoredb.Add(results.Penalties.GetScore())
 		renderTemplate(w, "result.tpl", results)
 	}
 }

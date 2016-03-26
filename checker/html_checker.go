@@ -16,8 +16,8 @@ import (
 
 type HTMLChecker struct{}
 
-func (c *HTMLChecker) Check(r *result.Result) {
-	if !strings.Contains(strings.ToLower(r.ContentType), "html") {
+func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
+	if !strings.Contains(strings.ToLower(p.ContentType), "html") {
 		r.AddError(errors.New("No HTML content found"))
 		return
 	}
@@ -27,7 +27,7 @@ func (c *HTMLChecker) Check(r *result.Result) {
 	externalIFrameHosts := make([]string, 0, 8)
 	externalLinkHosts := make([]string, 0, 8)
 	externalResourceHosts := make([]string, 0, 8)
-	t := html.NewTokenizer(bytes.NewReader(r.ResponseBody))
+	t := html.NewTokenizer(bytes.NewReader(p.ResponseBody))
 	for {
 		tagToken := t.Next()
 		if tagToken == html.ErrorToken {
@@ -45,7 +45,7 @@ func (c *HTMLChecker) Check(r *result.Result) {
 		switch string(tagName) {
 		case "script":
 			if !scriptTagFound {
-				r.AddPenalty(penalty.P_JS, 5)
+				r.Penalties.Add(penalty.P_JS)
 				scriptTagFound = true
 			}
 			src, found := getAttr(t, "src")
@@ -54,14 +54,14 @@ func (c *HTMLChecker) Check(r *result.Result) {
 				if err != nil {
 					break
 				}
-				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
+				addHostIfNew(u.Host, p.Domain, &externalResourceHosts)
 			}
 		case "iframe":
 			src, found := getAttr(t, "src")
 			if found {
 				u, err := url.Parse(src)
 				if err == nil {
-					addHostIfNew(u.Host, r.Domain, &externalIFrameHosts)
+					addHostIfNew(u.Host, p.Domain, &externalIFrameHosts)
 				}
 			}
 		case "link":
@@ -74,7 +74,7 @@ func (c *HTMLChecker) Check(r *result.Result) {
 				if err != nil {
 					break
 				}
-				addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
+				addHostIfNew(u.Host, p.Domain, &externalResourceHosts)
 			}
 		case "img":
 			src, found := getAttr(t, "src")
@@ -85,7 +85,7 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			if err != nil {
 				break
 			}
-			addHostIfNew(u.Host, r.Domain, &externalResourceHosts)
+			addHostIfNew(u.Host, p.Domain, &externalResourceHosts)
 		case "meta":
 			attrs := getAttrs(t)
 			if _, found := attrs["name"]; !found || attrs["name"] != "referrer" {
@@ -112,28 +112,25 @@ func (c *HTMLChecker) Check(r *result.Result) {
 			if err != nil {
 				break
 			}
-			if (u.Scheme == "" && r.URL.Scheme != "https") || u.Scheme == "http" {
+			if (u.Scheme == "" && p.URL.Scheme != "https") || u.Scheme == "http" {
 				hasHTTPLink = true
 			}
 			if !forbidsReferrer && !noreferrer {
-				addHostIfNew(u.Host, r.Domain, &externalLinkHosts)
+				addHostIfNew(u.Host, p.Domain, &externalLinkHosts)
 			}
 		}
 	}
 	if len(externalIFrameHosts) > 0 {
-		p := r.AddPenalty(penalty.P_IFRAME, penalty.Score(len(externalIFrameHosts)*5))
-		p.Notes = externalIFrameHosts
+		r.Penalties.Add(penalty.P_IFRAME, externalIFrameHosts...)
 	}
 	if len(externalLinkHosts) > 0 {
-		p := r.AddPenalty(penalty.P_EXTERNAL_LINK, 2)
-		p.Notes = externalLinkHosts
+		r.Penalties.Add(penalty.P_EXTERNAL_LINK, externalLinkHosts...)
 	}
 	if hasHTTPLink {
-		r.AddPenalty(penalty.P_HTTP_LINK, 2)
+		r.Penalties.Add(penalty.P_HTTP_LINK)
 	}
 	if len(externalResourceHosts) > 0 {
-		p := r.AddPenalty(penalty.P_EXTERNAL_RESOURCE, penalty.Score(len(externalResourceHosts)*10))
-		p.Notes = externalResourceHosts
+		r.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, externalResourceHosts...)
 	}
 }
 

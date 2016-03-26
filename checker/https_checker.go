@@ -7,8 +7,8 @@ import (
 
 type HTTPSChecker struct{}
 
-func (c *HTTPSChecker) Check(r *result.Result) {
-	if r.URL.Scheme != "https" {
-		r.AddPenalty(penalty.P_NO_HTTPS, 5)
+func (c *HTTPSChecker) Check(r *result.Result, p *PageInfo) {
+	if p.URL.Scheme != "https" {
+		r.Penalties.Add(penalty.P_NO_HTTPS)
 	}
 }

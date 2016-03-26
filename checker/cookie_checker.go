@@ -7,8 +7,8 @@ import (
 
 type CookieChecker struct{}
 
-func (c *CookieChecker) Check(r *result.Result) {
-	if len(r.Cookies) > 0 {
-		r.AddPenalty(penalty.P_COOKIE, 5)
+func (c *CookieChecker) Check(r *result.Result, p *PageInfo) {
+	if len(p.Cookies) > 0 {
+		r.Penalties.Add(penalty.P_COOKIE)
 	}
 }
