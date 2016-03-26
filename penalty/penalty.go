@@ -95,7 +95,7 @@ func New(p PenaltyType) *Penalty {
 	case P_EXTERNAL_LINK:
 		desc = "Leaks HTTP referrer to foreign host"
 		link = "https://randomoracle.wordpress.com/2013/11/23/privacy-and-http-referer-header-12/"
-		score = 3
+		score = 1
 	case P_HTTP_LINK:
 		desc = "Has link to unencrypted service (no HTTPS)"
 		link = "https://en.wikipedia.org/wiki/HTTP_Secure"
@@ -103,15 +103,15 @@ func New(p PenaltyType) *Penalty {
 	case P_EXTERNAL_RESOURCE:
 		desc = "Loads external resource"
 		link = "https://jonathanmayer.org/papers_data/trackingsurvey12.pdf"
-		score = 3
+		score = 8
 	case P_NO_HTTPS:
 		desc = "Uses unencrypted transport layer (no HTTPS)"
 		link = "https://en.wikipedia.org/wiki/HTTP_Secure"
-		score = 3
+		score = 6
 	case P_JS:
 		desc = "Uses JavaScript"
 		link = "todo"
-		score = 3
+		score = 5
 	case P_NO_SECURE_HEADER:
 		desc = "Missing secure HTTP header"
 		link = "https://scotthelme.co.uk/hardening-your-http-response-headers/"
