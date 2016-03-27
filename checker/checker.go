@@ -98,8 +98,18 @@ func (c *CheckJob) CheckURL(URL string) {
 			c.Chan <- false
 			return
 		}
-		defer r.Body.Close()
-		body, err := ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
+		var body []byte
+		contentType := r.Header.Get("Content-Type")
+		if strings.Contains(contentType, "text") && r.StatusCode == 200 {
+			body, err = ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
+			if err != nil {
+				c.Result.AddError(err)
+			}
+		} else {
+			body = []byte{}
+		}
+		r.Body.Close()
+
 		u, _ := url.Parse(URL)
 		p = &PageInfo{
 			body,
@@ -110,9 +120,6 @@ func (c *CheckJob) CheckURL(URL string) {
 			r.Cookies(),
 			utils.CropSubdomains(r.Request.URL.Host),
 			&r.Header,
-		}
-		if err != nil {
-			c.Result.AddError(err)
 		}
 		for _, ch := range checkers {
 			ch.Check(c, p)
