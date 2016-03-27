@@ -83,6 +83,9 @@ func newCheckJob(URL string) *CheckJob {
 }
 
 func (c *CheckJob) CheckURL(URL string) {
+	if URL == "" {
+		return
+	}
 	// URL already added
 	if _, found := c.Resources[URL]; found {
 		return
