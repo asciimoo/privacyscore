@@ -78,8 +78,13 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 				break
 			}
 			u, err := url.Parse(src)
-			if err == nil && isForeignHost(u.Host, p.Domain) {
+			if err != nil {
+				break
+			}
+			if isForeignHost(u.Host, p.Domain) {
 				c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
+			} else {
+				c.CheckURL(utils.GetFullURL(u, p.URL))
 			}
 		case "meta":
 			attrs := getAttrs(t)
