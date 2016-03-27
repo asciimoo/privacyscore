@@ -10,13 +10,12 @@ import (
 	"golang.org/x/net/html"
 
 	"github.com/asciimoo/privacyscore/penalty"
-	"github.com/asciimoo/privacyscore/result"
 	"github.com/asciimoo/privacyscore/utils"
 )
 
 type HTMLChecker struct{}
 
-func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
+func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 	if !strings.Contains(strings.ToLower(p.ContentType), "html") {
 		return
 	}
@@ -30,7 +29,7 @@ func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
 			if t.Err() == io.EOF {
 				break
 			} else {
-				r.AddError(errors.New("Invalid HTML content"))
+				c.Result.AddError(errors.New("Invalid HTML content"))
 				return
 			}
 		}
@@ -41,7 +40,7 @@ func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
 		switch string(tagName) {
 		case "script":
 			if !scriptTagFound {
-				r.Penalties.Add(penalty.P_JS)
+				c.Result.Penalties.Add(penalty.P_JS)
 				scriptTagFound = true
 			}
 			src, found := getAttr(t, "src")
@@ -51,7 +50,7 @@ func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
 					break
 				}
 				if isForeignHost(u.Host, p.Domain) {
-					r.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
+					c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
 				}
 			}
 		case "iframe":
@@ -59,7 +58,7 @@ func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
 			if found {
 				u, err := url.Parse(src)
 				if err == nil && isForeignHost(u.Host, p.Domain) {
-					r.Penalties.Add(penalty.P_IFRAME, utils.CropSubdomains(u.Host))
+					c.Result.Penalties.Add(penalty.P_IFRAME, utils.CropSubdomains(u.Host))
 				}
 			}
 		case "link":
@@ -70,7 +69,7 @@ func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
 			if src, found := attrs["href"]; found {
 				u, err := url.Parse(src)
 				if err == nil && isForeignHost(u.Host, p.Domain) {
-					r.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
+					c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
 				}
 			}
 		case "img":
@@ -80,7 +79,7 @@ func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
 			}
 			u, err := url.Parse(src)
 			if err == nil && isForeignHost(u.Host, p.Domain) {
-				r.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
+				c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
 			}
 		case "meta":
 			attrs := getAttrs(t)
@@ -112,12 +111,12 @@ func (c *HTMLChecker) Check(r *result.Result, p *PageInfo) {
 				hasHTTPLink = true
 			}
 			if !forbidsReferrer && !noreferrer && isForeignHost(u.Host, p.Domain) {
-				r.Penalties.Add(penalty.P_EXTERNAL_LINK, utils.CropSubdomains(u.Host))
+				c.Result.Penalties.Add(penalty.P_EXTERNAL_LINK, utils.CropSubdomains(u.Host))
 			}
 		}
 	}
 	if hasHTTPLink {
-		r.Penalties.Add(penalty.P_HTTP_LINK)
+		c.Result.Penalties.Add(penalty.P_HTTP_LINK)
 	}
 }
 

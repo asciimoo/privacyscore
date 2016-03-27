@@ -22,7 +22,7 @@ const maxResponseBodySize = 1024 * 1024 * 5
 var mutex = &sync.Mutex{}
 
 type Checker interface {
-	Check(*result.Result, *PageInfo)
+	Check(*CheckJob, *PageInfo)
 }
 
 type CheckJob struct {
@@ -57,14 +57,18 @@ func Run(URL string) (*result.Result, error) {
 	}
 	c := newCheckJob(URL)
 	finishedResources := 0
+	errorCount := 0
 	c.CheckURL(URL)
 	for finishedResources != len(c.Resources) && finishedResources < RESOURCE_LIMIT {
 		select {
-		case _ = <-c.Chan:
+		case ret := <-c.Chan:
+			if ret == false {
+				errorCount += 1
+			}
 			finishedResources += 1
 		}
 	}
-	if finishedResources == 0 {
+	if finishedResources == 0 || (errorCount > 0 && errorCount == finishedResources) {
 		return c.Result, errors.New("Could not download host")
 	}
 	return c.Result, nil
@@ -81,39 +85,39 @@ func newCheckJob(URL string) *CheckJob {
 func (c *CheckJob) CheckURL(URL string) {
 	// URL already added
 	if _, found := c.Resources[URL]; found {
-		c.Chan <- true
 		return
 	}
-	r, err := fetchURL(URL)
-	if err != nil {
-		c.Result.AddError(err)
-		c.Chan <- false
-		return
-	}
-	defer r.Body.Close()
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
-	u, _ := url.Parse(URL)
-	p := &PageInfo{
-		body,
-		r.Header.Get("Content-Type"),
-		r.StatusCode,
-		r.Request.URL,
-		u,
-		r.Cookies(),
-		utils.CropSubdomains(r.Request.URL.Host),
-		&r.Header,
-	}
-	if err != nil {
-		c.Result.AddError(err)
-	}
+	var p *PageInfo
 	c.Lock()
 	c.Resources[URL] = p
 	c.Unlock()
 	go func() {
-		for _, ch := range checkers {
-			ch.Check(c.Result, p)
+		r, err := fetchURL(URL)
+		if err != nil {
+			c.Result.AddError(err)
+			c.Chan <- false
+			return
 		}
-		c.Chan <- false
+		defer r.Body.Close()
+		body, err := ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
+		u, _ := url.Parse(URL)
+		p = &PageInfo{
+			body,
+			r.Header.Get("Content-Type"),
+			r.StatusCode,
+			r.Request.URL,
+			u,
+			r.Cookies(),
+			utils.CropSubdomains(r.Request.URL.Host),
+			&r.Header,
+		}
+		if err != nil {
+			c.Result.AddError(err)
+		}
+		for _, ch := range checkers {
+			ch.Check(c, p)
+		}
+		c.Chan <- true
 	}()
 	return
 }
