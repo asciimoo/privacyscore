@@ -32,7 +32,10 @@ func GetFullURL(URL, baseURL *url.URL) string {
 	if URL.Host == "" {
 		URL.Host = baseURL.Host
 	}
-	if URL.Scheme == "" {
+	switch URL.Scheme {
+	case "data":
+		return ""
+	case "":
 		URL.Scheme = baseURL.Scheme
 	}
 	return URL.String()
