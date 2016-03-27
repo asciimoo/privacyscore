@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"net/url"
+
 	"golang.org/x/net/publicsuffix"
 
 	"github.com/asciimoo/privacyscore/penalty"
@@ -24,4 +26,14 @@ func GetScoreName(s penalty.Score) string {
 		return "bad"
 	}
 	return "poor"
+}
+
+func GetFullURL(URL, baseURL *url.URL) string {
+	if URL.Host == "" {
+		URL.Host = baseURL.Host
+	}
+	if URL.Scheme == "" {
+		URL.Scheme = baseURL.Scheme
+	}
+	return URL.String()
 }
