@@ -90,6 +90,10 @@ func (c *CheckJob) CheckURL(URL string) {
 	if _, found := c.Resources[URL]; found {
 		return
 	}
+	// resource limit exceeded
+	if len(c.Resources) >= RESOURCE_LIMIT {
+		return
+	}
 	var p *PageInfo
 	c.Lock()
 	c.Resources[URL] = p
