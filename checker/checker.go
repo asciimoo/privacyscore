@@ -140,7 +140,8 @@ func fetchURL(URL string) (*http.Response, error) {
 	client := http.Client{
 		Timeout: time.Duration(TIMEOUT * time.Second),
 		Transport: &http.Transport{
-			DisableKeepAlives: true,
+			DisableKeepAlives:     true,
+			ResponseHeaderTimeout: TIMEOUT * time.Second,
 		},
 	}
 	req, err := http.NewRequest("GET", URL, nil)
