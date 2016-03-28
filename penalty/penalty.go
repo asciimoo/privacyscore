@@ -37,8 +37,14 @@ func NewPenaltyContainer() *PenaltyContainer {
 	return &PenaltyContainer{penalties: make(map[PenaltyType]*Penalty)}
 }
 
-func (c *PenaltyContainer) GetAll() map[PenaltyType]*Penalty {
-	return c.penalties
+func (c *PenaltyContainer) GetAll() []*Penalty {
+	l := make([]*Penalty, 0, len(c.penalties))
+	c.RLock()
+	for _, p := range c.penalties {
+		l = append(l, p)
+	}
+	c.RUnlock()
+	return l
 }
 
 func (c *PenaltyContainer) Add(pt PenaltyType, notes ...string) {
