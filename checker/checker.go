@@ -110,7 +110,7 @@ func (c *CheckJob) CheckURL(URL string) {
 		}
 		var body []byte
 		contentType := r.Header.Get("Content-Type")
-		if strings.Contains(contentType, "text") && r.StatusCode == 200 {
+		if r.StatusCode == 200 && (strings.Contains(contentType, "text/") || strings.Contains(contentType, "html")) {
 			body, err = ioutil.ReadAll(io.LimitReader(r.Body, maxResponseBodySize))
 			if err != nil {
 				c.Result.AddError(err)
