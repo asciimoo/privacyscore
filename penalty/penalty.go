@@ -48,7 +48,10 @@ func (c *PenaltyContainer) GetAll() []*Penalty {
 }
 
 func (c *PenaltyContainer) Add(pt PenaltyType, notes ...string) {
-	if p, found := c.penalties[pt]; found {
+	c.RLock()
+	p, found := c.penalties[pt]
+	c.RUnlock()
+	if found {
 		for _, n := range notes {
 			if n == "" {
 				continue
