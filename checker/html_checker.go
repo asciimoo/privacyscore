@@ -49,7 +49,7 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 				if err != nil {
 					break
 				}
-				if isForeignHost(u.Host, p.Domain) {
+				if utils.IsForeignHost(u.Host, p.Domain) {
 					c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
 				}
 			}
@@ -57,7 +57,7 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			src, found := getAttr(t, "src")
 			if found {
 				u, err := url.Parse(src)
-				if err == nil && isForeignHost(u.Host, p.Domain) {
+				if err == nil && utils.IsForeignHost(u.Host, p.Domain) {
 					c.Result.Penalties.Add(penalty.P_IFRAME, utils.CropSubdomains(u.Host))
 				}
 			}
@@ -68,8 +68,13 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			}
 			if src, found := attrs["href"]; found {
 				u, err := url.Parse(src)
-				if err == nil && isForeignHost(u.Host, p.Domain) {
+				if err != nil {
+					break
+				}
+				if utils.IsForeignHost(u.Host, p.Domain) {
 					c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
+				} else {
+					c.CheckURL(utils.GetFullURL(u, p.URL))
 				}
 			}
 		case "img":
@@ -81,7 +86,7 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			if err != nil {
 				break
 			}
-			if isForeignHost(u.Host, p.Domain) {
+			if utils.IsForeignHost(u.Host, p.Domain) {
 				c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
 			} else {
 				c.CheckURL(utils.GetFullURL(u, p.URL))
@@ -115,7 +120,7 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			if (u.Scheme == "" && p.URL.Scheme != "https") || u.Scheme == "http" {
 				hasHTTPLink = true
 			}
-			if !forbidsReferrer && !noreferrer && isForeignHost(u.Host, p.Domain) {
+			if !forbidsReferrer && !noreferrer && utils.IsForeignHost(u.Host, p.Domain) {
 				c.Result.Penalties.Add(penalty.P_EXTERNAL_LINK, utils.CropSubdomains(u.Host))
 			}
 		}
@@ -123,14 +128,6 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 	if hasHTTPLink {
 		c.Result.Penalties.Add(penalty.P_HTTP_LINK)
 	}
-}
-
-func isForeignHost(host, baseDomain string) bool {
-	host = utils.CropSubdomains(host)
-	if host == "" || host == baseDomain {
-		return false
-	}
-	return true
 }
 
 func getAttr(t *html.Tokenizer, name string) (string, bool) {

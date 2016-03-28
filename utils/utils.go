@@ -40,3 +40,11 @@ func GetFullURL(URL, baseURL *url.URL) string {
 	}
 	return URL.String()
 }
+
+func IsForeignHost(host, baseDomain string) bool {
+	host = CropSubdomains(host)
+	if host == "" || host == baseDomain {
+		return false
+	}
+	return true
+}
