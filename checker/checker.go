@@ -51,7 +51,7 @@ var checkers []Checker = []Checker{
 	&CSSChecker{},
 }
 
-func Run(URL string) (*result.Result, error) {
+func Run(URL string) (*CheckJob, error) {
 	if !strings.HasPrefix(URL, "http://") && !strings.HasPrefix(URL, "https://") {
 		URL = "http://" + URL
 	}
@@ -69,9 +69,9 @@ func Run(URL string) (*result.Result, error) {
 		}
 	}
 	if finishedResources == 0 || (errorCount > 0 && errorCount == finishedResources) {
-		return c.Result, errors.New("Could not download host")
+		return c, errors.New("Could not download host")
 	}
-	return c.Result, nil
+	return c, nil
 }
 
 func newCheckJob(URL string) *CheckJob {

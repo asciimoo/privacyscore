@@ -72,16 +72,16 @@ func serveAboutPage(w http.ResponseWriter, request *http.Request) {
 
 func checkURL(w http.ResponseWriter, request *http.Request) {
 	url := request.FormValue("url")
-	results, err := checker.Run(url)
+	c, err := checker.Run(url)
 	if err != nil {
 		log.Println("[check][error]", url, err)
 		renderTemplate(w, "error.tpl", struct {
 			Error error
 		}{err})
 	} else {
-		log.Println("[check]", url, results.Penalties.GetScore())
-		scoredb.Add(results.Penalties.GetScore())
-		renderTemplate(w, "result.tpl", results)
+		log.Println("[check]", len(c.Resources), url, c.Result.Penalties.GetScore())
+		scoredb.Add(c.Result.Penalties.GetScore())
+		renderTemplate(w, "result.tpl", c.Result)
 	}
 }
 
