@@ -71,8 +71,11 @@ func Run(URL string) (*CheckJob, error) {
 	if finishedResources == 0 || (errorCount > 0 && errorCount == finishedResources) {
 		return c, errors.New("Could not download host")
 	}
-	if r, found := c.Resources[URL]; found && r != nil {
-		c.Result.BaseURL = c.Resources[URL].URL.String()
+	c.RLock()
+	r, found := c.Resources[URL]
+	c.RUnlock()
+	if found && r != nil {
+		c.Result.BaseURL = r.URL.String()
 	}
 	return c, nil
 }
