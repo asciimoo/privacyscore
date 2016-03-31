@@ -6,8 +6,12 @@ import (
 	"github.com/asciimoo/privacyscore/server"
 )
 
-var listen = flag.String("listen", "localhost:1080", "listen on address")
+var listen = flag.String("listen", "127.0.0.1:1080", "server listen address")
 
 func main() {
-	server.Run(listen)
+
+	flag.Parse()
+	if len(flag.Args()) == 0 {
+		server.Run(listen)
+	}
 }
