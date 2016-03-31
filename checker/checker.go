@@ -71,6 +71,9 @@ func Run(URL string) (*CheckJob, error) {
 	if finishedResources == 0 || (errorCount > 0 && errorCount == finishedResources) {
 		return c, errors.New("Could not download host")
 	}
+	if r, found := c.Resources[URL]; found && r != nil {
+		c.Result.BaseURL = c.Resources[URL].URL.String()
+	}
 	return c, nil
 }
 
@@ -131,6 +134,9 @@ func (c *CheckJob) CheckURL(URL string) {
 			utils.CropSubdomains(r.Request.URL.Host),
 			&r.Header,
 		}
+		c.Lock()
+		c.Resources[URL] = p
+		c.Unlock()
 		for _, ch := range checkers {
 			ch.Check(c, p)
 		}
