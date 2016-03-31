@@ -91,9 +91,9 @@ func (c *CheckJob) CheckURL(URL string) {
 	}
 	// URL already added
 	c.RLock()
-	_, found := c.Resources[URL]
+	r, found := c.Resources[URL]
 	c.RUnlock()
-	if found {
+	if found && r != nil {
 		return
 	}
 	// resource limit exceeded
