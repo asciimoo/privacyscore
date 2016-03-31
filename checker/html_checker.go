@@ -57,8 +57,13 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			src, found := getAttr(t, "src")
 			if found {
 				u, err := url.Parse(src)
-				if err == nil && utils.IsForeignHost(u.Host, p.Domain) {
+				if err != nil {
+					break
+				}
+				if utils.IsForeignHost(u.Host, p.Domain) {
 					c.Result.Penalties.Add(penalty.P_IFRAME, utils.CropSubdomains(u.Host))
+				} else {
+					c.CheckURL(utils.GetFullURL(u, p.URL))
 				}
 			}
 		case "link":
