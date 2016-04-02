@@ -45,26 +45,12 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			}
 			src, found := getAttr(t, "src")
 			if found {
-				u, err := url.Parse(src)
-				if err != nil {
-					break
-				}
-				if utils.IsForeignHost(u.Host, p.Domain) {
-					c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
-				}
+				handleSiteURL(src, c, p, penalty.P_EXTERNAL_RESOURCE)
 			}
 		case "iframe":
 			src, found := getAttr(t, "src")
 			if found {
-				u, err := url.Parse(src)
-				if err != nil {
-					break
-				}
-				if utils.IsForeignHost(u.Host, p.Domain) {
-					c.Result.Penalties.Add(penalty.P_IFRAME, utils.CropSubdomains(u.Host))
-				} else {
-					c.CheckURL(utils.GetFullURL(u, p.URL))
-				}
+				handleSiteURL(src, c, p, penalty.P_IFRAME)
 			}
 		case "link":
 			attrs := getAttrs(t)
@@ -76,10 +62,9 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			}
 		case "img":
 			src, found := getAttr(t, "src")
-			if !found {
-				break
+			if found {
+				handleSiteURL(src, c, p, penalty.P_EXTERNAL_RESOURCE)
 			}
-			handleSiteURL(src, c, p, penalty.P_EXTERNAL_RESOURCE)
 		case "meta":
 			attrs := getAttrs(t)
 			if _, found := attrs["name"]; !found || attrs["name"] != "referrer" {
