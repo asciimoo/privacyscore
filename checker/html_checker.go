@@ -72,30 +72,14 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 				break
 			}
 			if src, found := attrs["href"]; found {
-				u, err := url.Parse(src)
-				if err != nil {
-					break
-				}
-				if utils.IsForeignHost(u.Host, p.Domain) {
-					c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
-				} else {
-					c.CheckURL(utils.GetFullURL(u, p.URL))
-				}
+				handleSiteURL(src, c, p, penalty.P_EXTERNAL_RESOURCE)
 			}
 		case "img":
 			src, found := getAttr(t, "src")
 			if !found {
 				break
 			}
-			u, err := url.Parse(src)
-			if err != nil {
-				break
-			}
-			if utils.IsForeignHost(u.Host, p.Domain) {
-				c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
-			} else {
-				c.CheckURL(utils.GetFullURL(u, p.URL))
-			}
+			handleSiteURL(src, c, p, penalty.P_EXTERNAL_RESOURCE)
 		case "meta":
 			attrs := getAttrs(t)
 			if _, found := attrs["name"]; !found || attrs["name"] != "referrer" {
@@ -132,6 +116,18 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 	}
 	if hasHTTPLink {
 		c.Result.Penalties.Add(penalty.P_HTTP_LINK)
+	}
+}
+
+func handleSiteURL(URL string, c *CheckJob, p *PageInfo, penalty penalty.PenaltyType) {
+	u, err := url.Parse(URL)
+	if err != nil {
+		return
+	}
+	if utils.IsForeignHost(u.Host, p.Domain) {
+		c.Result.Penalties.Add(penalty, utils.CropSubdomains(u.Host))
+	} else {
+		c.CheckURL(utils.GetFullURL(u, p.URL))
 	}
 }
 
