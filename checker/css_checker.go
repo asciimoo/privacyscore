@@ -2,12 +2,10 @@ package checker
 
 import (
 	"bytes"
-	"net/url"
 	"regexp"
 	"strings"
 
 	"github.com/asciimoo/privacyscore/penalty"
-	"github.com/asciimoo/privacyscore/utils"
 )
 
 // TODO
@@ -29,17 +27,8 @@ func (_ *CSSChecker) Check(c *CheckJob, p *PageInfo) {
 		default:
 			b = b[4 : len(b)-1]
 		}
-		if bytes.HasPrefix(b, []byte("data:")) {
-			break
-		}
-		u, err := url.Parse(string(b))
-		if err != nil {
-			break
-		}
-		if utils.IsForeignHost(u.Host, p.Domain) {
-			c.Result.Penalties.Add(penalty.P_EXTERNAL_RESOURCE, utils.CropSubdomains(u.Host))
-		} else {
-			c.CheckURL(utils.GetFullURL(u, p.URL))
+		if !bytes.HasPrefix(b, []byte("data:")) {
+			handleSiteURL(string(b), c, p, penalty.P_EXTERNAL_RESOURCE)
 		}
 	}
 }
