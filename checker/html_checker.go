@@ -94,7 +94,7 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			if (u.Scheme == "" && p.URL.Scheme != "https") || u.Scheme == "http" {
 				hasHTTPLink = true
 			}
-			if !forbidsReferrer && !noreferrer && utils.IsForeignHost(u.Host, p.Domain) {
+			if !forbidsReferrer && !noreferrer && !(p.URL.Scheme == "https" && u.Scheme == "http") && utils.IsForeignHost(u.Host, p.Domain) {
 				c.Result.Penalties.Add(penalty.P_EXTERNAL_LINK, utils.CropSubdomains(u.Host))
 			}
 		}
