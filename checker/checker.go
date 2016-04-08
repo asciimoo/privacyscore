@@ -2,6 +2,7 @@ package checker
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -101,6 +102,7 @@ func (c *CheckJob) CheckURL(URL string) {
 	}
 	// resource limit exceeded
 	if len(c.Resources) >= RESOURCE_LIMIT {
+		c.Result.AddError(errors.New(fmt.Sprintf("Resource limit exceeded, site loads more than %v resources", RESOURCE_LIMIT)))
 		return
 	}
 	var p *PageInfo
