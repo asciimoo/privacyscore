@@ -49,8 +49,12 @@
 <div class="penalty_info" id="p_no_secure_header">
     <h4 class="left">Missing secure HTTP headers</h4>
     <h5 class="right">3 points per header</h5>
-    <p>Solution:
-        <pre></pre>
+    <p>Prefered values:
+        <pre>
+ X-Frame-Options: DENY # SAMEORIGIN also accepted
+ X-Xss-Protection: 1; mode=block
+ X-Content-Type-Options: nosniff
+ Strict-Transport-Security: max-age=31536000 # only on HTTPS</pre>
     </p>
 </div>
 
