@@ -42,11 +42,11 @@ func init() {
 }
 
 func Add(s penalty.Score) {
-	s = s - (s % step)
 	var idx int
 	if s < minScore {
 		idx = 0
 	} else {
+		s = s - (s % step)
 		idx = int((int(s)-minScore)/step) + 1
 	}
 	if idx >= len(scores.DB) {
