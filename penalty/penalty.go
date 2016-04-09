@@ -108,7 +108,7 @@ func New(p PenaltyType) *Penalty {
 	case P_HTTP_LINK:
 		desc = "Has link to unencrypted service (no HTTPS)"
 		link = "about#p_http_link"
-		score = 3
+		score = 1
 	case P_EXTERNAL_RESOURCE:
 		desc = "Loads external resource"
 		link = "about#p_external_resource"

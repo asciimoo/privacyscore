@@ -20,7 +20,6 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 		return
 	}
 	forbidsReferrer := false
-	hasHTTPLink := false
 	scriptTagFound := false
 	t := html.NewTokenizer(bytes.NewReader(p.ResponseBody))
 	for {
@@ -92,15 +91,12 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 				break
 			}
 			if (u.Scheme == "" && p.URL.Scheme != "https") || u.Scheme == "http" {
-				hasHTTPLink = true
+				c.Result.Penalties.Add(penalty.P_HTTP_LINK, utils.CropSubdomains(u.Host))
 			}
 			if !forbidsReferrer && !noreferrer && !(p.URL.Scheme == "https" && u.Scheme == "http") && utils.IsForeignHost(u.Host, p.Domain) {
 				c.Result.Penalties.Add(penalty.P_EXTERNAL_LINK, utils.CropSubdomains(u.Host))
 			}
 		}
-	}
-	if hasHTTPLink {
-		c.Result.Penalties.Add(penalty.P_HTTP_LINK)
 	}
 }
 
