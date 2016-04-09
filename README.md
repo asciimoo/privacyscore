@@ -4,8 +4,7 @@
 
 ```
 go get github.com/asciimoo/privacyscore
-cd "$GOPATH/src/github.com/asciimoo/privacyscore"
-go run privacyscore.go
+"$GOPATH/bin/privacyscore"
 ```
 
 ### TODO
