@@ -87,13 +87,13 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 				noreferrer = true
 			}
 			u, err := url.Parse(src)
-			if err != nil {
+			if err != nil || !utils.IsForeignHost(u.Host, p.Domain) {
 				break
 			}
 			if (u.Scheme == "" && p.URL.Scheme != "https") || u.Scheme == "http" {
 				c.Result.Penalties.Add(penalty.P_HTTP_LINK, utils.CropSubdomains(u.Host))
 			}
-			if !forbidsReferrer && !noreferrer && !(p.URL.Scheme == "https" && u.Scheme == "http") && utils.IsForeignHost(u.Host, p.Domain) {
+			if !forbidsReferrer && !noreferrer && !(p.URL.Scheme == "https" && u.Scheme == "http") {
 				c.Result.Penalties.Add(penalty.P_EXTERNAL_LINK, utils.CropSubdomains(u.Host))
 			}
 		}
