@@ -30,7 +30,7 @@ type CheckJob struct {
 	sync.RWMutex
 	Result    *result.Result
 	Resources map[string]*PageInfo
-	Chan      chan bool
+	wg        *sync.WaitGroup
 }
 
 type PageInfo struct {
@@ -57,36 +57,27 @@ func Run(URL string) (*CheckJob, error) {
 		URL = "http://" + URL
 	}
 	c := newCheckJob(URL)
-	finishedResources := 0
-	errorCount := 0
-	c.CheckURL(URL)
-	for finishedResources != len(c.Resources) && finishedResources < RESOURCE_LIMIT {
-		select {
-		case ret := <-c.Chan:
-			if ret == false {
-				errorCount += 1
-			}
-			finishedResources += 1
-		}
-	}
-	if finishedResources == 0 || (errorCount > 0 && errorCount == finishedResources) {
-		return c, errors.New("Could not download host")
-	}
-	c.RLock()
 	r, found := c.Resources[URL]
-	c.RUnlock()
 	if found && r != nil {
 		c.Result.BaseURL = r.URL.String()
+		return c, nil
 	}
-	return c, nil
+	return c, errors.New("Could not download host")
 }
 
 func newCheckJob(URL string) *CheckJob {
-	return &CheckJob{
+	c := &CheckJob{
 		Result:    result.New(URL),
 		Resources: make(map[string]*PageInfo),
-		Chan:      make(chan bool, RESOURCE_LIMIT),
+		wg:        &sync.WaitGroup{},
 	}
+	c.Check(URL)
+	return c
+}
+
+func (c *CheckJob) Check(URL string) {
+	c.CheckURL(URL)
+	c.wg.Wait()
 }
 
 func (c *CheckJob) CheckURL(URL string) {
@@ -108,12 +99,13 @@ func (c *CheckJob) CheckURL(URL string) {
 	var p *PageInfo
 	c.Lock()
 	c.Resources[URL] = p
+	c.wg.Add(1)
 	c.Unlock()
 	go func() {
 		r, err := fetchURL(URL)
 		if err != nil {
 			c.Result.AddError(err)
-			c.Chan <- false
+			c.wg.Done()
 			return
 		}
 		var body []byte
@@ -145,7 +137,7 @@ func (c *CheckJob) CheckURL(URL string) {
 		for _, ch := range checkers {
 			ch.Check(c, p)
 		}
-		c.Chan <- true
+		c.wg.Done()
 	}()
 	return
 }
