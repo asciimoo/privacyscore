@@ -49,7 +49,7 @@
 <div class="penalty_info" id="p_no_secure_header">
     <h4 class="left">Missing secure HTTP headers</h4>
     <h5 class="right">3 points per header</h5>
-    <p>Prefered values:
+    <p>Preferred values:
         <pre>
  X-Frame-Options: DENY # SAMEORIGIN also accepted
  X-Xss-Protection: 1; mode=block
