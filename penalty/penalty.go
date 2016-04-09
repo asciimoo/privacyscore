@@ -112,7 +112,7 @@ func New(p PenaltyType) *Penalty {
 	case P_EXTERNAL_RESOURCE:
 		desc = "Loads external resource"
 		link = "https://jonathanmayer.org/papers_data/trackingsurvey12.pdf"
-		score = 8
+		score = 5
 	case P_NO_HTTPS:
 		desc = "Uses unencrypted transport layer (no HTTPS)"
 		link = "https://en.wikipedia.org/wiki/HTTP_Secure"
@@ -120,7 +120,7 @@ func New(p PenaltyType) *Penalty {
 	case P_JS:
 		desc = "Uses JavaScript"
 		link = "todo"
-		score = 5
+		score = 7
 	case P_NO_SECURE_HEADER:
 		desc = "Missing secure HTTP header"
 		link = "https://scotthelme.co.uk/hardening-your-http-response-headers/"
@@ -128,7 +128,7 @@ func New(p PenaltyType) *Penalty {
 	case P_IFRAME:
 		desc = "Loads external content to iframe"
 		link = "http://stackoverflow.com/questions/7289139/why-are-iframes-considered-dangerous-and-a-security-risk"
-		score = 3
+		score = 5
 	}
 	return &Penalty{desc, link, make([]string, 0, 8), score}
 }
