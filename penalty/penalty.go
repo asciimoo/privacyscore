@@ -99,35 +99,35 @@ func New(p PenaltyType) *Penalty {
 	switch p {
 	case P_COOKIE:
 		desc = "Automatically sets cookies"
-		link = "https://en.wikipedia.org/wiki/Internet_privacy#HTTP_cookies"
+		link = "about#p_cookie"
 		score = 3
 	case P_EXTERNAL_LINK:
-		desc = "Leaks HTTP referrer to foreign host"
-		link = "https://randomoracle.wordpress.com/2013/11/23/privacy-and-http-referer-header-12/"
+		desc = "Sends HTTP referrer to foreign host"
+		link = "about#p_external_link"
 		score = 1
 	case P_HTTP_LINK:
 		desc = "Has link to unencrypted service (no HTTPS)"
-		link = "https://en.wikipedia.org/wiki/HTTP_Secure"
+		link = "about#p_http_link"
 		score = 3
 	case P_EXTERNAL_RESOURCE:
 		desc = "Loads external resource"
-		link = "https://jonathanmayer.org/papers_data/trackingsurvey12.pdf"
+		link = "about#p_external_resource"
 		score = 5
 	case P_NO_HTTPS:
 		desc = "Uses unencrypted transport layer (no HTTPS)"
-		link = "https://en.wikipedia.org/wiki/HTTP_Secure"
+		link = "about#p_no_https"
 		score = 6
 	case P_JS:
 		desc = "Uses JavaScript"
-		link = "todo"
+		link = "about#p_js"
 		score = 7
 	case P_NO_SECURE_HEADER:
 		desc = "Missing secure HTTP header"
-		link = "https://scotthelme.co.uk/hardening-your-http-response-headers/"
+		link = "about#p_no_secure_header"
 		score = 3
 	case P_IFRAME:
 		desc = "Loads external content to iframe"
-		link = "http://stackoverflow.com/questions/7289139/why-are-iframes-considered-dangerous-and-a-security-risk"
+		link = "about#p_iframe"
 		score = 5
 	}
 	return &Penalty{desc, link, make([]string, 0, 8), score}
