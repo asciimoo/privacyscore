@@ -81,7 +81,7 @@ func checkURL(w http.ResponseWriter, request *http.Request) {
 	} else {
 		log.Println("[check]", len(c.Resources), url, c.Result.Penalties.GetScore())
 		scoredb.Add(c.Result.Penalties.GetScore())
-		renderTemplate(w, "result.tpl", c.Result)
+		renderTemplate(w, "result.tpl", c)
 	}
 }
 

@@ -12,6 +12,7 @@ h2 { font-size: 5.2rem; }
 a { color: #2980b9; }
 p { clear: both; }
 pre { padding: 0; margin: 0; }
+li { list-style: none; padding: 0 0.5em; margin: 0;}
 .right { float: right; }
 .left { float: left; }
 .navigation { border-bottom: 1px solid #ddd; background-color: #f4f5f6; height: 5.2rem; position: absolute; top: 0; left: 0; right: 0; z-index: 98; }
@@ -42,7 +43,7 @@ input[type="submit"].big_input { background-color: #2980b9 !important; border: 0
 
 td:first-child, th:first-child { padding-left: 0.6em; }
 td:last-child, th:last-child { padding-right: 0.6em; }
-th:last-child { text-align: right; }
+#check_results th:last-child { text-align: right; }
 
 .nopenalties { text-align: center; margin-top: 2em; color: #40d47e; }
 .result_header { display: flex; align-items: center; margin-top: 6.2rem; }
