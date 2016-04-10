@@ -26,23 +26,24 @@
     {{ end }}
     <hr />
 </div>
+{{ if .Result.Errors }}
 <div class="row">
-    {{ if .Result.Errors }}
     <div class="column">
+        <h4>Errors</h4>
         <table>
-            <tr><th>Errors</th></tr>
             {{ range .Result.Errors }}<tr><td>{{ . }}</td></tr>{{ end }}
         </table>
     </div>
-    {{ end }}
-    {{ if .Resources }}
-    <div class="column">
-            <h4>Checked resources</h4>
-            <ul>
-            {{ range .Resources }}<li>{{ .URL }}</li>{{ end }}
-            </ul>
-        </table>
-    </div>
-    {{ end }}
 </div>
+{{ end }}
+{{ if .Resources }}
+<div class="row">
+    <div class="column">
+        <h4>Checked resources</h4>
+        <ul>
+        {{ range .Resources }}{{ if . }}<li>{{ .URL }}</li>{{ end }}{{ end }}
+        </ul>
+    </div>
+</div>
+{{ end }}
 {{ end }}
