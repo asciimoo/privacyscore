@@ -53,11 +53,13 @@ func (_ *HTMLChecker) Check(c *CheckJob, p *PageInfo) {
 			}
 		case "link":
 			attrs := getAttrs(t)
-			if rel, found := attrs["rel"]; !found || rel != "stylesheet" {
-				break
-			}
-			if src, found := attrs["href"]; found {
-				handleSiteURL(src, c, p, penalty.P_EXTERNAL_RESOURCE)
+			if rel, found := attrs["rel"]; found {
+				switch rel {
+				case "stylesheet", "prefetch", "preload", "prerender", "search":
+					if src, found := attrs["href"]; found {
+						handleSiteURL(src, c, p, penalty.P_EXTERNAL_RESOURCE)
+					}
+				}
 			}
 		case "img":
 			src, found := getAttr(t, "src")
