@@ -21,7 +21,7 @@
 <div class="penalty_info" id="p_external_resource">
     <h4 class="left">Load external resource</h4>
     <h5 class="right">5 points per host</h5>
-    <p>Leaks tons of information to remote service</p>
+    <p>Leaks tons of information to remote service, such as your IP, user agent, browser, platform</p>
     <p>Solution: serve your resources from the same host</p>
 </div>
 
@@ -35,7 +35,7 @@
 <div class="penalty_info" id="p_js">
     <h4 class="left">JavaScript required</h4>
     <h5 class="right">7 points</h5>
-    <p>JavaScript is a deep swamp of user tracking</p>
+    <p>JavaScript is a deep swamp of user tracking. Check the related <a href="https://en.wikipedia.org/wiki/JavaScript#Security">wikipedia article</a> for more information</p>
     <p>Solution: serve your page without JavaScript</p>
 </div>
 
@@ -61,7 +61,7 @@
 <div class="penalty_info" id="p_iframe">
     <h4 class="left">External content in iFrame</h4>
     <h5 class="right">5 points per host</h5>
-    <p>Leaks tons of information to remote service</p>
+    <p>Leaks tons of information to remote service, such as your IP, user agent, browser, platform</p>
     <p>Solution: serve your page without external iFrames</p>
 </div>
 
