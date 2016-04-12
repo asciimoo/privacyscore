@@ -10,7 +10,6 @@ go get github.com/asciimoo/privacyscore
 ### TODO
 
  - Checkers
+   - More sophisticated SSL + javascript checking
    - https://jonathanmayer.org/papers_data/trackingsurvey12.pdf
- - About page
  - Description of penalties (+ possible solutions)
- - CLI checker tool
